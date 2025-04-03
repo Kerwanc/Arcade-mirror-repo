@@ -8,8 +8,8 @@
 #ifndef UPDATEMANAGEMENT_HPP_
     #define UPDATEMANAGEMENT_HPP_
 
-    #include "vector"
-    #include "entitys.hpp"
+    #include <vector>
+    #include "entity.hpp"
 
 typedef struct datas_s {
     std::vector<entity_t> bg;
