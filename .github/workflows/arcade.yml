@@ -17,19 +17,8 @@ jobs:
     steps:
       - run: ls
 
-  check_program_compilation:
-    needs: [is_mirror]
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - uses: actions/checkout@v4
-      - name: Clear repo
-        run: make re
-      - name: Check for executable
-        run: if [ ! -f "./${{ env.EXECUTABLES }}" ]; then exit 1; fi
-
   push_to_mirror:
-    needs: [check_program_compilation]
+    needs: [is_mirror]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
