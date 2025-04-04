@@ -1,0 +1,49 @@
+name: Arcade
+run-name: Mirroring to main 
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  MIRROR_URL: 'git@github.com:EpitechPromo2028/B-OOP-400-PAR-4-1-arcade-luigi.gomes.git'
+  EXECUTABLES: 'arcade'
+
+jobs:
+  is_mirror:
+    runs-on: ubuntu-latest
+    if: github.repository != 'EpitechPromo2028/B-OOP-400-PAR-4-1-arcade-luigi.gomes'
+    steps:
+      - run: ls
+
+  check_program_compilation:
+    needs: [is_mirror]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clear repo
+        run: rm -f ${{ env.EXECUTABLES }} ./build/ ./lib/
+      - name: Creating build directory
+        run: mkdir ./build/
+      - name: Compilation
+        working-directory: ./build/
+        run: cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && make
+      - name: Check for executable
+        run: if [ ! -f "./${{ env.EXECUTABLES }}" ]; then exit 1; fi
+
+  push_to_mirror:
+    needs: [check_program_compilation]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            ${{ env.MIRROR_URL }}
+          ssh_private_key:
+            ${{ secrets.GIT_SSH_PRIVATE_KEY }}
