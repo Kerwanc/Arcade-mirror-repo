@@ -41,7 +41,7 @@ event_t GraphicSample::getEvent()
             event.events.push_back(A_KEY_B);
             break;
         case KEY_UP:
-            event.events.push_back(A_KEY_D);
+            event.events.push_back(A_KEY_AUP);
             break;
         case KEY_DOWN:
             event.events.push_back(A_KEY_ADOWN);
