@@ -16,6 +16,17 @@ typedef struct conf_s {
     size_t mines_nb;
 }   conf_t;
 
+enum tile_state_e {
+    COVERED,
+    DISCOVERED,
+    FLAGED
+};
+
+typedef struct tile_s {
+    tile_state_e state;
+    int8_t neighboring_cells;
+} tile_t;
+
 class Minesweeper : public arcade::IGame {
     public:
         Minesweeper();
@@ -25,9 +36,11 @@ class Minesweeper : public arcade::IGame {
         void generateMap(void);
         void insertARandomMine(size_t mines_placed);
         void increaseNeighboringTiles(uint8_t column, uint8_t line);
+        void markFlag(uint8_t x, uint8_t y);
+        void removeAnObjectByItsPos(uint8_t x, uint8_t y);
     private:
         data_t data_;
-        std::vector<std::vector<int16_t>> map_;
+        std::vector<std::vector<tile_t>> map_;
         conf_t game_params_;
 };
 
@@ -50,6 +63,7 @@ const color_t TILES_COLOR[2] {
 };
 
 const color_t BACKGROUND_COLOR = {2, 130, 0, 255};
+const color_t FLAG_COLOR = {200, 0, 0, 255};
 
 /* ASSETS */
 
