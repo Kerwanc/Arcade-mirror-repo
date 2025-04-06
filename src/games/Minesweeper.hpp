@@ -11,10 +11,10 @@
     #include "IGame.hpp"
     #include <iostream>
     
-typedef struct difficulty_s {
+typedef struct conf_s {
     std::pair<uint8_t, uint8_t> map_size;
-    uint8_t mines_nb;
-}   difficulty_t;
+    size_t mines_nb;
+}   conf_t;
 
 class Minesweeper : public arcade::IGame {
     public:
@@ -22,9 +22,13 @@ class Minesweeper : public arcade::IGame {
         ~Minesweeper();
         void handleEvent(event_t events) override;
         data_t update(void) override;
+        void generateMap(void);
+        void insertARandomMine(size_t mines_placed);
+        void increaseNeighboringTiles(uint8_t column, uint8_t line);
     private:
         data_t data_;
-        difficulty_t game_params_;
+        std::vector<std::vector<int16_t>> map_;
+        conf_t game_params_;
 };
 
 
@@ -32,7 +36,7 @@ const char EMPTY_SYMBOL = 0;
 const uint8_t DIFFICULTY_AVAILABLE = 3;
 const uint8_t DEFAULT_DIFFICULTY = 1;
 
-const difficulty_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
+const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
     {{9, 9}, 10},
     {{16, 16}, 40},
     {{30, 16}, 99}
