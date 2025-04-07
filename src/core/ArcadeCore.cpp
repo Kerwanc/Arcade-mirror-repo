@@ -6,7 +6,8 @@
 */
 
 #include "ArcadeCore.hpp"
-#include "DLLoader.hpp"
+#include "DLLoaderGame.hpp"
+#include "DLLoaderGraphic.hpp"
 #include "Error.hpp"
 #include "Ncurses.hpp"
 #include "ICore.hpp"
@@ -22,15 +23,40 @@ bool endsWith(const std::string& src, const std::string& ending)
 void arcade::ArcadeCore::load(std::string libPath, typeLib_e type)
 {
     if (!libPath.empty() && type == GAME_LIB) {
-        DLLoader<IGame> menu_loader(libPath);
+        DLLoaderGame<IGame> menu_loader(libPath);
         this->game_.reset(menu_loader.getInstance());
+        run(); 
     }
     if (!libPath.empty() && type == GRAPHIC_LIB) {
-        DLLoader<IGraphic> loader(libPath);
+        DLLoaderGraphic<IGraphic> loader(libPath);
         this->graphic_.reset(loader.getInstance());
         run();
     }
 }
+
+size_t handleMenu(event_e event, size_t libIndex, int lastGame)
+{
+    if (event == A_KEY_AUP)
+        libIndex -= 1;
+    if (event == A_KEY_ADOWN)
+        libIndex += 1;
+    if (libIndex < 2)
+        libIndex = lastGame;
+    if (libIndex > lastGame)
+        libIndex = 0;
+    return libIndex;
+}
+
+size_t indexOfCurrentLib(const std::string currentLib, const std::vector<std::string> allgraphics)
+{
+    for (size_t i = 0; i < allgraphics.size(); ++i) {
+        if (allgraphics[i] == currentLib) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 
 void arcade::ArcadeCore::run() 
 {
@@ -49,16 +75,66 @@ void arcade::ArcadeCore::run()
             }
             if (event == A_KEY_A) {
                 graphic_.reset();
+                graphicIndex = graphicIndex + 1;
+                if (graphicIndex > allgraphics_.size() - 1)
+                    graphicIndex = 0;
+                break;
+            }
+            if (data.isMenu == true) {
+                gameIndex = handleMenu(event, gameIndex, allgames_.size() - 1);
+            }
+            if (event == A_KEY_ENTER && data.isMenu == true) {
+                game_.reset();
                 break;
             }
         }
-        if (graphic_) {
+        if (graphic_ && game_) {
             graphic_->display(data);
             game_->handleEvent(instructions);
+        } else if (!graphic_) {
+            return load(allgraphics_[graphicIndex], GRAPHIC_LIB);
         } else {
-            return load("./lib/arcade_ncurses.so", GRAPHIC_LIB);
+            return load(allgames_[gameIndex], GAME_LIB);
         }
     }
+}
+
+std::vector<std::string> getAllGames()
+{
+    std::vector<std::string> games;
+    void *handle;
+    void *sym;
+
+    for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
+        handle = dlopen(entry.path().c_str(), RTLD_LAZY);
+        if (!handle)
+            continue;
+        sym = dlsym(handle, "makeGame");
+        if (!sym)
+            continue;
+        games.push_back(entry.path().c_str());
+        dlclose(handle);
+    }
+    return games;
+}
+
+std::vector<std::string> getAllGraphics()
+{
+    std::vector<std::string> graphics;
+    void *handle;
+    void *sym;
+
+    for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
+        handle = dlopen(entry.path().c_str(), RTLD_LAZY);
+        if (!handle)
+            continue;
+        sym = dlsym(handle, "makeGraphic");
+        if (!sym)
+            continue;
+        graphics.push_back(entry.path().c_str());
+        dlclose(handle);
+    }
+    return graphics;
 }
 
 arcade::ArcadeCore::ArcadeCore(int argc, const char *argv[])
@@ -71,11 +147,15 @@ arcade::ArcadeCore::ArcadeCore(int argc, const char *argv[])
         throw Error("Error: Invalid library format, expected a .so file.");
     
     currentLib = libPath;
-    DLLoader<IGraphic> loader(currentLib);
+    allgames_ = getAllGames();
+    allgraphics_ = getAllGraphics();
+
+    DLLoaderGraphic<IGraphic> loader(currentLib);
     graphic_.reset(loader.getInstance());
 
-    DLLoader<IGame> menu_loader("./lib/arcade_menu.so");
+    DLLoaderGame<IGame> menu_loader(MENU_PATH);
     game_.reset(menu_loader.getInstance());
-    
+    gameIndex = 0;
+    graphicIndex = indexOfCurrentLib(currentLib, allgraphics_);
     run();
 }

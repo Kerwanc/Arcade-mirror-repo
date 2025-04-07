@@ -12,6 +12,8 @@
     #include <iostream>
     #include <memory>
     #include "IGraphic.hpp"
+    constexpr int KEY_PRESSED_ENTER = 10;
+    constexpr int KEY_PRESSED_ESC = 27;
 
 class GraphicSample : public arcade::IGraphic {
     public:
@@ -24,6 +26,6 @@ class GraphicSample : public arcade::IGraphic {
         WINDOW *win;
 };
 
-extern "C" arcade::IGraphic* loadingLib();
+extern "C" arcade::IGraphic* makeGraphic();
 
 #endif /* !NCURSES */

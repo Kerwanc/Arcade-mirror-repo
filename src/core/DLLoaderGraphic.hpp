@@ -5,8 +5,8 @@
 ** DLLoader
 */
 
-#ifndef DLLOADER_HPP_
-    #define DLLOADER_HPP_
+#ifndef DLLOADERGRAPHIC_HPP_
+    #define DLLOADERGRAPHIC_HPP_
 
 #include <iostream>
 #include <dlfcn.h>
@@ -14,21 +14,21 @@
 
 template <typename T>
 
-class DLLoader {
+class DLLoaderGraphic {
     public:
-        DLLoader(const std::string &path) {
+        DLLoaderGraphic(const std::string &path) {
             handle = dlopen(path.c_str(), RTLD_LAZY);
             if (!handle) {
                 error = dlerror();
                 throw Error(error);
             }
         }
-        ~DLLoader() {
+        ~DLLoaderGraphic() {
             dlclose(handle);
         }
         T *getInstance() {
             using CreateFunc = T *(*)(); // équivaut à faire T *(*fonction)() pour utiliser dlsym
-            CreateFunc library = (CreateFunc)dlsym(handle, "loadingLib");
+            CreateFunc library = (CreateFunc)dlsym(handle, "makeGraphic");
             return library();
         }
     private:
@@ -36,4 +36,4 @@ class DLLoader {
         std::string error;
 };
 
-#endif /* !DLLOADER_HPP_ */
+#endif /* !DLLOADERGRAPHIC_HPP_ */

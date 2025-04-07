@@ -9,17 +9,27 @@
 
 Menu::Menu()
 {
+    void *handle;
+    void *sym;
     double Pos = 4;
 
     menu.bg.push_back({{0,0}, {1920,1080}, 0, "./assets/Arcade_background.png", {0,0,0, 255}, UP});
     menu.texts.push_back({{5, 2}, 20, "Arcade Menu:", "", {255, 255, 255, 255}});
     menu.texts.push_back({{18, 2}, 20, "Select Your Game !", "", {255, 255, 255, 255}});
     for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
-        if (entry.is_regular_file() && entry.path().filename().string().find('.') ) {
+        handle = dlopen(entry.path().c_str(), RTLD_LAZY);
+        if (!handle)
+            continue;
+        sym = dlsym(handle, "makeGame");
+        if (!sym)
+            continue;
+        dlclose(handle);
+        if (entry.is_regular_file() && entry.path().filename().string().find('.')) {
             menu.texts.push_back({{5, Pos}, 12, entry.path().filename().string(), "", {200, 200, 200, 255}});
             Pos += 1;
         }
     }
+    menu.isMenu = true;
     selectedIndex = 2;
 }
 
@@ -56,6 +66,6 @@ void Menu::handleEvent(event_t CurrentEvent)
         selectedIndex = 2;
 }
 
-extern "C" arcade::IGame* loadingLib() {
+extern "C" arcade::IGame* makeGame() {
     return new Menu();
 }

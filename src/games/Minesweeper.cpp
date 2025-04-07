@@ -118,6 +118,6 @@ data_t Minesweeper::update(void)
     return data_;
 }
 
-extern "C" arcade::IGame* loadingLib() {
+extern "C" arcade::IGame* makeGame() {
     return new Minesweeper();
 }

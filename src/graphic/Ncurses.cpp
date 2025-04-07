@@ -31,7 +31,7 @@ event_t GraphicSample::getEvent()
     int ch = wgetch(win);
 
     switch (ch) {
-        case 27:
+        case KEY_PRESSED_ESC:
             event.events.push_back(A_KEY_ESC);
             break;
         case 'a':
@@ -51,6 +51,9 @@ event_t GraphicSample::getEvent()
             break;
         case KEY_RIGHT:
             event.events.push_back(A_KEY_ARIGHT);
+            break;
+        case KEY_PRESSED_ENTER:
+            event.events.push_back(A_KEY_ENTER);
             break;
         default:
             break;
@@ -80,7 +83,7 @@ void GraphicSample::display(data_t data)
     wrefresh(win);
 }
 
-extern "C" arcade::IGraphic* loadingLib()
+extern "C" arcade::IGraphic* makeGraphic()
 {
     return new GraphicSample();
 }

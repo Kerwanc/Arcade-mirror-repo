@@ -83,7 +83,7 @@ void Sdl::display(data_t data)
     SDL_RenderPresent(renderer);
 }
 
-extern "C" arcade::IGraphic* loadingLib()
+extern "C" arcade::IGraphic* makeGraphic()
 {
     return new Sdl();
 }

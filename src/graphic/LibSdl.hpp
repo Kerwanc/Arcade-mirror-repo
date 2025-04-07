@@ -26,7 +26,7 @@ class Sdl : public arcade::IGraphic {
         SDL_Renderer *renderer;
 };
 
-extern "C" arcade::IGraphic* loadingLib();
+extern "C" arcade::IGraphic* makeGraphic();
 
 #endif /* !SDL_HPP_ */
 

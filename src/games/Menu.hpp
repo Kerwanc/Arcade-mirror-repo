@@ -12,6 +12,7 @@
     #include <memory>
     #include <filesystem>
     #include <algorithm>
+    #include <dlfcn.h>
     #include "IGame.hpp"
 
 class Menu : public arcade::IGame {
@@ -26,6 +27,6 @@ class Menu : public arcade::IGame {
         size_t selectedIndex;
 };
 
-extern "C" arcade::IGame* loadingLib();
+extern "C" arcade::IGame* makeGame();
 
 #endif /* !MENU_HPP_ */

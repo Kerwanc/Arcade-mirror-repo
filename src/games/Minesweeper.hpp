@@ -74,6 +74,6 @@ const std::string TILES_ASSETS[2] {
 
 const std::string BACKGROUND_ASSETS = "";
 
-extern "C" arcade::IGame* loadingLib();
+extern "C" arcade::IGame* makeGame();
 
 #endif /* MINESWEEPER_H */
