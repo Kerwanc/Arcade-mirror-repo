@@ -75,10 +75,22 @@ void GraphicSample::display(data_t data)
         colorID += 1;
         pairID += 1;
     }
-    for (const auto &entity : data.objects)
-        mvwprintw(win, entity.pos.y, entity.pos.x, "*");
-    for (const auto &entity : data.ui)
-        mvwprintw(win, entity.pos.y, entity.pos.x, "@");
+    for (const auto &entity : data.objects) {
+        init_color(colorID, entity.color.r * 1000 / 255, entity.color.g * 1000 / 255, entity.color.b * 1000 / 255);
+        init_pair(pairID, colorID, COLOR_BLACK);
+        wattron(win, COLOR_PAIR(pairID));
+        mvwaddch(win, entity.pos.x, entity.pos.y, entity.character);
+        colorID += 1;
+        pairID += 1;
+    }
+    for (const auto &entity : data.ui) {
+        init_color(colorID, entity.color.r * 1000 / 255, entity.color.g * 1000 / 255, entity.color.b * 1000 / 255);
+        init_pair(pairID, colorID, COLOR_BLACK);
+        wattron(win, COLOR_PAIR(pairID));
+        mvwaddch(win, entity.pos.x, entity.pos.y, entity.character);
+        colorID += 1;
+        pairID += 1;
+    }
     for (const auto &text : data.texts) {
         init_color(colorID, text.color.r * 1000 / 255, text.color.g * 1000 / 255, text.color.b * 1000 / 255);
         init_pair(pairID, colorID, COLOR_BLACK);

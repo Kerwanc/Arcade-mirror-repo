@@ -34,13 +34,13 @@ void arcade::ArcadeCore::load(std::string libPath, typeLib_e type)
     }
 }
 
-size_t handleMenu(event_e event, size_t libIndex, int lastGame)
+int handleMenu(event_e event, int libIndex, int lastGame)
 {
     if (event == A_KEY_AUP)
         libIndex -= 1;
     if (event == A_KEY_ADOWN)
         libIndex += 1;
-    if (libIndex < 2)
+    if (libIndex < 0)
         libIndex = lastGame;
     if (libIndex > lastGame)
         libIndex = 0;
@@ -49,8 +49,9 @@ size_t handleMenu(event_e event, size_t libIndex, int lastGame)
 
 size_t indexOfCurrentLib(const std::string currentLib, const std::vector<std::string> allgraphics)
 {
-    for (size_t i = 0; i < allgraphics.size(); ++i) {
-        if (allgraphics[i] == currentLib) {
+    for (size_t i = 0; i < allgraphics.size(); i++) {
+        if (allgraphics[i].substr(allgraphics[i].find("a"), allgraphics[i].npos) ==
+            currentLib.substr(currentLib.find("a"), currentLib.npos)) {
             return i;
         }
     }
@@ -76,7 +77,7 @@ void arcade::ArcadeCore::run()
             if (event == A_KEY_A) {
                 graphic_.reset();
                 graphicIndex = graphicIndex + 1;
-                if (graphicIndex > allgraphics_.size() - 1)
+                if (graphicIndex > (int)allgraphics_.size() - 1)
                     graphicIndex = 0;
                 break;
             }
@@ -157,5 +158,7 @@ arcade::ArcadeCore::ArcadeCore(int argc, const char *argv[])
     game_.reset(menu_loader.getInstance());
     gameIndex = 0;
     graphicIndex = indexOfCurrentLib(currentLib, allgraphics_);
+    if ((int)graphicIndex == -1)
+        throw Error("Error: current lib isn't in lib directory");
     run();
 }

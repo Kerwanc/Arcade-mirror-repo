@@ -32,8 +32,8 @@ namespace arcade {
             std::string currentLib;
             std::unique_ptr<IGraphic> graphic_;
             std::unique_ptr<IGame> game_;
-            size_t gameIndex;
-            size_t graphicIndex;
+            int gameIndex;
+            int graphicIndex;
     };
 }
 
