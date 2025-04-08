@@ -71,7 +71,7 @@ void GraphicSample::display(data_t data)
         init_color(colorID, entity.color.r * 1000 / 255, entity.color.g * 1000 / 255, entity.color.b * 1000 / 255);
         init_pair(pairID, colorID, COLOR_BLACK);
         wattron(win, COLOR_PAIR(pairID));
-        mvwadd_wch(win, entity.pos.x, entity.pos.y, (const cchar_t *)entity.character);
+        mvwaddch(win, entity.pos.x, entity.pos.y, entity.character);
         colorID += 1;
         pairID += 1;
     }
