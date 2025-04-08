@@ -36,9 +36,9 @@ void arcade::ArcadeCore::load(std::string libPath, typeLib_e type)
 
 int handleMenu(event_e event, int libIndex, int lastGame)
 {
-    if (event == A_KEY_AUP)
+    if (event == A_KEY_UP)
         libIndex -= 1;
-    if (event == A_KEY_ADOWN)
+    if (event == A_KEY_DOWN)
         libIndex += 1;
     if (libIndex < 0)
         libIndex = lastGame;

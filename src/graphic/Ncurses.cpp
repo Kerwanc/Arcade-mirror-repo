@@ -41,16 +41,16 @@ event_t GraphicSample::getEvent()
             event.events.push_back(A_KEY_B);
             break;
         case KEY_UP:
-            event.events.push_back(A_KEY_AUP);
+            event.events.push_back(A_KEY_UP);
             break;
         case KEY_DOWN:
-            event.events.push_back(A_KEY_ADOWN);
+            event.events.push_back(A_KEY_DOWN);
             break;
         case KEY_LEFT:
-            event.events.push_back(A_KEY_ALEFT);
+            event.events.push_back(A_KEY_LEFT);
             break;
         case KEY_RIGHT:
-            event.events.push_back(A_KEY_ARIGHT);
+            event.events.push_back(A_KEY_RIGHT);
             break;
         case KEY_PRESSED_ENTER:
             event.events.push_back(A_KEY_ENTER);
