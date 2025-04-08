@@ -67,6 +67,14 @@ void GraphicSample::display(data_t data)
     short colorID = 11;
 
     wclear(win);
+    for (const auto &entity: data.bg) {
+        init_color(colorID, entity.color.r * 1000 / 255, entity.color.g * 1000 / 255, entity.color.b * 1000 / 255);
+        init_pair(pairID, colorID, COLOR_BLACK);
+        wattron(win, COLOR_PAIR(pairID));
+        mvwadd_wch(win, entity.pos.x, entity.pos.y, (const cchar_t *)entity.character);
+        colorID += 1;
+        pairID += 1;
+    }
     for (const auto &entity : data.objects)
         mvwprintw(win, entity.pos.y, entity.pos.x, "*");
     for (const auto &entity : data.ui)
