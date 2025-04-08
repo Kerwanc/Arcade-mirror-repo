@@ -40,16 +40,16 @@ event_t Sdl::getEvent()
                     event.events.push_back(A_KEY_B);
                     break;
                 case SDLK_UP:
-                    event.events.push_back(A_KEY_AUP);
+                    event.events.push_back(A_KEY_UP);
                     break;
                 case SDLK_DOWN:
-                    event.events.push_back(A_KEY_ADOWN);
+                    event.events.push_back(A_KEY_DOWN);
                     break;
                 case SDLK_LEFT:
-                    event.events.push_back(A_KEY_ALEFT);
+                    event.events.push_back(A_KEY_LEFT);
                     break;
                 case SDLK_RIGHT:
-                    event.events.push_back(A_KEY_ARIGHT);
+                    event.events.push_back(A_KEY_RIGHT);
                     break;
                 default:
                     break;

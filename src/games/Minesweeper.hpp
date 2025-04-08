@@ -44,8 +44,7 @@ class Minesweeper : public arcade::IGame {
         conf_t game_params_;
 };
 
-
-const char EMPTY_SYMBOL = 0;
+const char EMPTY_SYMBOL = ' ';
 const uint8_t DIFFICULTY_AVAILABLE = 3;
 const uint8_t DEFAULT_DIFFICULTY = 1;
 

@@ -11,6 +11,8 @@ NCURSES 			=	src/graphic/Ncurses.cpp
 
 SDL 				=	src/graphic/LibSdl.cpp
 
+SFML				= 	src/graphic/Sfml.cpp
+
 MENU				=	src/games/Menu.cpp
 
 MINESWEEPER			=	src/games/Minesweeper.cpp
@@ -30,17 +32,21 @@ CXXFLAGS 			= 	-Wall -Wextra -std=c++20 	\
 
 CORE_OBJ			=	$(CORE:.cpp=.o)
 
-GRAPHIC_FLAGS		= 	-lncurses
+NCURSES_FLAGS		= 	-lncurses
 
 SDL_FLAGS 			=	-lSDL2 -lSDL2_image
+
+SFML_FLAGS 			=	-lsfml-graphics -lsfml-window -lsfml-system
 
 DYNAMIC_FLAGS 		=	-fPIC -shared
 
 NAME				=	arcade
 
+NCURSES_NAME		=	arcade_ncurses.so
+
 SDL_NAME			=	arcade_sdl2.so
 
-NCURSES_NAME		=	arcade_ncurses.so
+SFML_NAME			=	arcade_sfml.so
 
 MENU_NAME 			=	arcade_menu.so
 
@@ -56,9 +62,9 @@ core: $(NAME)
 
 games: $(MENU_NAME) $(MINESWEEPER_NAME)
 
-graphicals: $(NCURSES_NAME) $(SDL_NAME)
+graphicals: $(NCURSES_NAME) $(SDL_NAME) $(SFML_NAME)
 
-all: $(NAME) $(NCURSES_NAME) $(SDL_NAME) $(MENU_NAME) $(MINESWEEPER_NAME)
+all: $(NAME) $(NCURSES_NAME) $(SDL_NAME) $(SFML_NAME) $(MENU_NAME) $(MINESWEEPER_NAME)
 
 $(MENU_NAME):
 	$(CXX) $(DYNAMIC_FLAGS) $(CXXFLAGS) $(MENU) -o $(MENU_NAME)
@@ -69,12 +75,16 @@ $(MINESWEEPER_NAME):
 	$(MV) $(MINESWEEPER_NAME) $(LIB_PATH)
 
 $(NCURSES_NAME):
-	$(CXX) $(GRAPHIC_FLAGS) $(CXXFLAGS) $(DYNAMIC_FLAGS) $(NCURSES) -o $(NCURSES_NAME)
+	$(CXX) $(NCURSES_FLAGS) $(CXXFLAGS) $(DYNAMIC_FLAGS) $(NCURSES) -o $(NCURSES_NAME)
 	$(MV) $(NCURSES_NAME) $(LIB_PATH)
 
 $(SDL_NAME):
 	$(CXX) $(DYNAMIC_FLAGS) $(CXXFLAGS) $(SDL_FLAGS) $(SDL) -o $(SDL_NAME)
 	$(MV) $(SDL_NAME) $(LIB_PATH)
+
+$(SFML_NAME):
+	$(CXX) $(DYNAMIC_FLAGS) $(CXXFLAGS) $(SFML_FLAGS) $(SFML) -o $(SFML_NAME)
+	$(MV) $(SFML_NAME) $(LIB_PATH)
 
 $(NAME): $(CORE_OBJ)
 	$(CXX) -o $(NAME) $(CXXFLAGS) $(CORE_OBJ) $(MAIN)
@@ -91,11 +101,13 @@ fclean:	clean
 	$(RM) $(LIB_PATH)$(NCURSES_NAME)
 	$(RM) $(LIB_PATH)$(MENU_NAME)
 	$(RM) $(LIB_PATH)$(SDL_NAME)
+	$(RM) $(LIB_PATH)$(MINESWEEPER_NAME)
+	$(RM) $(LIB_PATH)$(SFML_NAME)
 	$(RM) tests
 
 re:	fclean all
 
 .PHONY: all clean fclean re tests_run $(NAME) 	\
 		$(MENU_NAME) $(MINESWEEPER_NAME) 		\
-		$(NCURSES_NAME) $(SDL_NAME)				\
+		$(NCURSES_NAME) $(SDL_NAME)	$(SFML_NAME)\
 

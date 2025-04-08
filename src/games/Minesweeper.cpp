@@ -57,8 +57,9 @@ void Minesweeper::insertARandomMine(size_t mines_placed)
 void Minesweeper::generateMap(void)
 {
     for (uint8_t column = 0; column < game_params_.map_size.second; column++) {
+        map_.push_back({});
         for (uint8_t line = 0; line < game_params_.map_size.first; line++) {
-            map_[column][line] = {COVERED, 0};
+            map_[column].push_back({COVERED, 0});
         }
     }
     for (size_t mines_placed = 0; mines_placed < game_params_.mines_nb; mines_placed++) {
@@ -104,9 +105,7 @@ Minesweeper::Minesweeper()
     generateMap();
     for (size_t i = 0; i < game_params_.map_size.second; i++) {
         for (size_t j = 0; j < game_params_.map_size.first; j++) {
-            std::cout << map_[i][j].neighboring_cells << " ";
         }
-        std::cout << std::endl;
     }
 }
 
@@ -116,6 +115,16 @@ Minesweeper::~Minesweeper() {}
 data_t Minesweeper::update(void)
 {
     return data_;
+}
+
+void Minesweeper::handleEvent(event_t CurrentEvent)
+{
+    for (const auto &event: CurrentEvent.events) {
+        if (event == A_KEY_B) {
+        }
+        if (event == A_KEY_DOWN) {
+        }
+    }
 }
 
 extern "C" arcade::IGame* makeGame() {

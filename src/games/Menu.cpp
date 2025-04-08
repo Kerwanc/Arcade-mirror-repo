@@ -53,10 +53,10 @@ data_t Menu::update(void)
 void Menu::handleEvent(event_t CurrentEvent)
 {
     for (const auto &event: CurrentEvent.events) {
-        if (event == A_KEY_AUP) {
+        if (event == A_KEY_UP) {
                 selectedIndex -= 1;
         }
-        if (event == A_KEY_ADOWN) {
+        if (event == A_KEY_DOWN) {
                 selectedIndex += 1;
         }
     }
