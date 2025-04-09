@@ -12,6 +12,12 @@
 #include "Ncurses.hpp"
 #include "ICore.hpp"
 
+arcade::ArcadeCore::~ArcadeCore()
+{
+    game_.reset();
+    graphic_.reset();
+}
+
 bool endsWith(const std::string& src, const std::string& ending)
 {
     size_t pos = src.size() - ending.size();
@@ -25,26 +31,11 @@ void arcade::ArcadeCore::load(std::string libPath, typeLib_e type)
     if (!libPath.empty() && type == GAME_LIB) {
         DLLoaderGame<IGame> menu_loader(libPath);
         this->game_.reset(menu_loader.getInstance());
-        run(); 
     }
     if (!libPath.empty() && type == GRAPHIC_LIB) {
         DLLoaderGraphic<IGraphic> loader(libPath);
         this->graphic_.reset(loader.getInstance());
-        run();
     }
-}
-
-int handleMenu(event_e event, int libIndex, int lastGame)
-{
-    if (event == A_KEY_UP)
-        libIndex -= 1;
-    if (event == A_KEY_DOWN)
-        libIndex += 1;
-    if (libIndex < 0)
-        libIndex = lastGame;
-    if (libIndex > lastGame)
-        libIndex = 0;
-    return libIndex;
 }
 
 size_t indexOfCurrentLib(const std::string currentLib, const std::vector<std::string> allgraphics)
@@ -58,44 +49,44 @@ size_t indexOfCurrentLib(const std::string currentLib, const std::vector<std::st
     return -1;
 }
 
-
 void arcade::ArcadeCore::run() 
 {
     event_t instructions;
     data_t data;
+    data_t prevData = game_->update();
 
+    graphic_->display(prevData);
     while (true) {
+        instructions = graphic_->getEvent();
+        game_->handleEvent(instructions);
         data = game_->update();
         graphic_->display(data);
-        instructions = graphic_->getEvent();
         for (const auto &event: instructions.events) {
-            if (event == A_KEY_ESC) {
-                game_.reset();
-                graphic_.reset();
+            if (event == A_KEY_ESC)
                 return;
-            }
             if (event == A_KEY_A) {
                 graphic_.reset();
                 graphicIndex = graphicIndex + 1;
                 if (graphicIndex > (int)allgraphics_.size() - 1)
                     graphicIndex = 0;
-                break;
             }
-            if (data.isMenu == true) {
-                gameIndex = handleMenu(event, gameIndex, allgames_.size() - 1);
-            }
-            if (event == A_KEY_ENTER && data.isMenu == true) {
+            if (prevData.libs.game != data.libs.game && 
+            prevData.libs.graphic != data.libs.graphic) {
                 game_.reset();
-                break;
+                graphic_.reset();
+                load(data.libs.game, GAME_LIB);
+                load(data.libs.graphic, GRAPHIC_LIB);
+                return run();
             }
         }
         if (graphic_ && game_) {
             graphic_->display(data);
-            game_->handleEvent(instructions);
         } else if (!graphic_) {
-            return load(allgraphics_[graphicIndex], GRAPHIC_LIB);
+            load(allgraphics_[graphicIndex], GRAPHIC_LIB);
+            return run();
         } else {
-            return load(allgames_[gameIndex], GAME_LIB);
+            load(allgames_[gameIndex], GAME_LIB);
+            return run();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace arcade {
     class ArcadeCore : public ICore {
         public:
             ArcadeCore(int argc, const char *argv[]);
-            ~ArcadeCore() = default;
+            ~ArcadeCore();
             void run();
             void load(std::string libPath, typeLib_e type);
         private:
