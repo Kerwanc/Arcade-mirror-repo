@@ -25,6 +25,9 @@ class Menu : public arcade::IGame {
     private:
         data_t menu;
         size_t selectedIndex;
+        libPaths_t newlibs;
+        size_t nbGames;
+        size_t nbGraphics;
 };
 
 extern "C" arcade::IGame* makeGame();

@@ -17,6 +17,9 @@ MENU				=	src/games/Menu.cpp
 
 MINESWEEPER			=	src/games/Minesweeper.cpp
 
+SNAKE				=	src/games/Snake.cpp
+
+
 MAIN				=	main.cpp
 
 LIB_PATH 			=	./lib/
@@ -52,6 +55,8 @@ MENU_NAME 			=	arcade_menu.so
 
 MINESWEEPER_NAME	=	arcade_minesweeper.so
 
+SNAKE_NAME			=	arcade_snake.so
+
 TEST_FLAG			=	--verbose -lcriterion
 
 CXX					= 	g++
@@ -60,11 +65,11 @@ MV 					=	mv
 
 core: $(NAME)
 
-games: $(MENU_NAME) $(MINESWEEPER_NAME)
+games: $(MENU_NAME) $(MINESWEEPER_NAME) $(SNAKE_NAME)
 
 graphicals: $(NCURSES_NAME) $(SDL_NAME) $(SFML_NAME)
 
-all: $(NAME) $(NCURSES_NAME) $(SDL_NAME) $(SFML_NAME) $(MENU_NAME) $(MINESWEEPER_NAME)
+all: $(NAME) $(NCURSES_NAME) $(SDL_NAME) $(SFML_NAME) $(MENU_NAME) $(MINESWEEPER_NAME) $(SNAKE_NAME)
 
 $(MENU_NAME):
 	$(CXX) $(DYNAMIC_FLAGS) $(CXXFLAGS) $(MENU) -o $(MENU_NAME)
@@ -73,6 +78,10 @@ $(MENU_NAME):
 $(MINESWEEPER_NAME):
 	$(CXX) $(DYNAMIC_FLAGS) $(CXXFLAGS) $(MINESWEEPER) -o $(MINESWEEPER_NAME)
 	$(MV) $(MINESWEEPER_NAME) $(LIB_PATH)
+
+$(SNAKE_NAME):
+	$(CXX) $(DYNAMIC_FLAGS) $(CXXFLAGS) $(SNAKE) -o $(SNAKE_NAME)
+	$(MV) $(SNAKE_NAME) $(LIB_PATH)
 
 $(NCURSES_NAME):
 	$(CXX) $(NCURSES_FLAGS) $(CXXFLAGS) $(DYNAMIC_FLAGS) $(NCURSES) -o $(NCURSES_NAME)
@@ -102,12 +111,10 @@ fclean:	clean
 	$(RM) $(LIB_PATH)$(MENU_NAME)
 	$(RM) $(LIB_PATH)$(SDL_NAME)
 	$(RM) $(LIB_PATH)$(MINESWEEPER_NAME)
+	$(RM) $(LIB_PATH)$(SNAKE_NAME)
 	$(RM) $(LIB_PATH)$(SFML_NAME)
 	$(RM) tests
 
 re:	fclean all
 
-.PHONY: all clean fclean re tests_run $(NAME) 	\
-		$(MENU_NAME) $(MINESWEEPER_NAME) 		\
-		$(NCURSES_NAME) $(SDL_NAME)	$(SFML_NAME)\
-
+.PHONY: all clean fclean re tests_run

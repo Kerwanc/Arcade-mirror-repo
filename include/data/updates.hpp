@@ -18,7 +18,6 @@ typedef struct data_s {
     std::vector<std::string> audios;
     std::vector<text_t> texts;
     libPaths_t libs;
-    bool isMenu;
 } data_t;
 
 #endif

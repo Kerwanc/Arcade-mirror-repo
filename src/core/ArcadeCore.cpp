@@ -12,6 +12,12 @@
 #include "Ncurses.hpp"
 #include "ICore.hpp"
 
+arcade::ArcadeCore::~ArcadeCore()
+{
+    game_.reset();
+    graphic_.reset();
+}
+
 bool endsWith(const std::string& src, const std::string& ending)
 {
     size_t pos = src.size() - ending.size();
@@ -25,31 +31,16 @@ void arcade::ArcadeCore::load(std::string libPath, typeLib_e type)
     if (!libPath.empty() && type == GAME_LIB) {
         DLLoaderGame<IGame> menu_loader(libPath);
         this->game_.reset(menu_loader.getInstance());
-        run(); 
     }
     if (!libPath.empty() && type == GRAPHIC_LIB) {
         DLLoaderGraphic<IGraphic> loader(libPath);
         this->graphic_.reset(loader.getInstance());
-        run();
     }
 }
 
-int handleMenu(event_e event, int libIndex, int lastGame)
+int indexOfCurrentLib(const std::string currentLib, const std::vector<std::string> allgraphics)
 {
-    if (event == A_KEY_UP)
-        libIndex -= 1;
-    if (event == A_KEY_DOWN)
-        libIndex += 1;
-    if (libIndex < 0)
-        libIndex = lastGame;
-    if (libIndex > lastGame)
-        libIndex = 0;
-    return libIndex;
-}
-
-size_t indexOfCurrentLib(const std::string currentLib, const std::vector<std::string> allgraphics)
-{
-    for (size_t i = 0; i < allgraphics.size(); i++) {
+    for (int i = 0; i < (int)allgraphics.size(); i++) {
         if (allgraphics[i].substr(allgraphics[i].find("a"), allgraphics[i].npos) ==
             currentLib.substr(currentLib.find("a"), currentLib.npos)) {
             return i;
@@ -59,45 +50,66 @@ size_t indexOfCurrentLib(const std::string currentLib, const std::vector<std::st
 }
 
 
-void arcade::ArcadeCore::run() 
+void arcade::ArcadeCore::switchGraphicLib()
+{
+    graphic_.reset();
+    graphicIndex = graphicIndex + 1;
+    if (graphicIndex > (int)allgraphics_.size() - 1)
+        graphicIndex = 0;
+}
+
+void arcade::ArcadeCore::menuReloading(const data_t& data)
+{
+    game_.reset();
+    graphic_.reset();
+    load(data.libs.game, GAME_LIB);
+    load(data.libs.graphic, GRAPHIC_LIB);
+    return run();
+}
+
+void arcade::ArcadeCore::reloadLibs(void)
+{
+    if (!graphic_) {
+        load(allgraphics_[graphicIndex], GRAPHIC_LIB);
+        return run();
+    } else if (!game_) {
+        load(allgames_[gameIndex], GAME_LIB);
+        return run();
+    }
+}
+
+void arcade::ArcadeCore::run()
 {
     event_t instructions;
     data_t data;
+    data_t prevData = game_->update();
 
+    graphic_->display(prevData);
     while (true) {
+        instructions = graphic_->getEvent();
+        game_->handleEvent(instructions);
         data = game_->update();
         graphic_->display(data);
-        instructions = graphic_->getEvent();
-        for (const auto &event: instructions.events) {
-            if (event == A_KEY_ESC) {
-                game_.reset();
-                graphic_.reset();
-                return;
-            }
-            if (event == A_KEY_A) {
-                graphic_.reset();
-                graphicIndex = graphicIndex + 1;
-                if (graphicIndex > (int)allgraphics_.size() - 1)
-                    graphicIndex = 0;
-                break;
-            }
-            if (data.isMenu == true) {
-                gameIndex = handleMenu(event, gameIndex, allgames_.size() - 1);
-            }
-            if (event == A_KEY_ENTER && data.isMenu == true) {
-                game_.reset();
-                break;
-            }
-        }
-        if (graphic_ && game_) {
-            graphic_->display(data);
-            game_->handleEvent(instructions);
-        } else if (!graphic_) {
-            return load(allgraphics_[graphicIndex], GRAPHIC_LIB);
-        } else {
-            return load(allgames_[gameIndex], GAME_LIB);
+        if (handleInstructions(instructions, prevData, data))
+            return;
+        reloadLibs();
+        prevData = data;
+    }
+}
+
+bool arcade::ArcadeCore::handleInstructions(const event_t& instructions, const data_t& prevData, const data_t& data)
+{
+    for (const auto& event : instructions.events) {
+        if (event == A_KEY_ESC)
+            return true;
+        if (event == A_KEY_A)
+            switchGraphicLib();
+        if (prevData.libs.game != data.libs.game ||
+            prevData.libs.graphic != data.libs.graphic) {
+            menuReloading(data);
         }
     }
+    return false;
 }
 
 std::vector<std::string> getAllGames()
@@ -158,7 +170,7 @@ arcade::ArcadeCore::ArcadeCore(int argc, const char *argv[])
     game_.reset(menu_loader.getInstance());
     gameIndex = 0;
     graphicIndex = indexOfCurrentLib(currentLib, allgraphics_);
-    if ((int)graphicIndex == -1)
+    if (graphicIndex == -1)
         throw Error("Error: current lib isn't in lib directory");
     run();
 }
