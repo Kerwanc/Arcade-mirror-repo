@@ -7,12 +7,17 @@
 
 #ifndef MINESWEEPER_H
     #define MINESWEEPER_H
+    #define MID_PERCENT 50
+    #define MAKE_VECTOR_T(size) (vector_t((double)size, (double)size))
+    #define GETBASEPOS(map_size, tile_size) \
+    ((double)(MID_PERCENT - map_size * ((double)tile_size / 2)))
 
     #include "IGame.hpp"
     #include <iostream>
     
 typedef struct conf_s {
     std::pair<uint8_t, uint8_t> map_size;
+    size_t tile_size;
     size_t mines_nb;
 }   conf_t;
 
@@ -36,8 +41,9 @@ class Minesweeper : public arcade::IGame {
         void generateMap(void);
         void insertARandomMine(size_t mines_placed);
         void increaseNeighboringTiles(uint8_t column, uint8_t line);
-        void markFlag(uint8_t x, uint8_t y);
+        void markFlag(double x, double y);
         void removeAnObjectByItsPos(uint8_t x, uint8_t y);
+        void handleOver(vector_t mousePos);
     private:
         data_t data_;
         std::vector<std::vector<tile_t>> map_;
@@ -45,13 +51,13 @@ class Minesweeper : public arcade::IGame {
 };
 
 const char EMPTY_SYMBOL = ' ';
-const uint8_t DIFFICULTY_AVAILABLE = 3;
+const uint8_t DIFFICULTY_AVAILABLE = 2;
 const uint8_t DEFAULT_DIFFICULTY = 1;
 
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
-    {{9, 9}, 10},
-    {{16, 16}, 40},
-    {{30, 16}, 99}
+    {{9, 9}, 3, 10},
+    {{16, 16}, 3, 40},
+    {{30, 16}, 3, 99}
 };
 
 /* COLOR PALETTE */
