@@ -12,11 +12,11 @@ GraphicSample::GraphicSample()
     initscr();
     noecho();
     cbreak();
+    set_escdelay(0);
     start_color();
     curs_set(0);
     win = newwin(LINES, COLS, 0, 0);
     keypad(win, TRUE);
-    wbkgd(win, COLOR_BLACK);
 }
 
 GraphicSample::~GraphicSample()
