@@ -29,7 +29,24 @@ Menu::Menu()
             Pos += 1;
         }
     }
-    menu.isMenu = true;
+    nbGames = menu.texts.size() - 1;
+    Pos += 1;
+    menu.texts.push_back({{5, Pos}, 20, "Select Your Graphic !", "", {255, 255, 255, 255}});
+    Pos += 2;
+    for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
+        handle = dlopen(entry.path().c_str(), RTLD_LAZY);
+        if (!handle)
+            continue;
+        sym = dlsym(handle, "makeGraphic");
+        if (!sym)
+            continue;
+        dlclose(handle);
+        if (entry.is_regular_file() && entry.path().filename().string().find('.')) {
+            menu.texts.push_back({{5, Pos}, 12, entry.path().filename().string(), "", {200, 200, 200, 255}});
+            Pos += 1;
+        }
+    }
+    nbGraphics = menu.texts.size() - 1;
     selectedIndex = 2;
 }
 
@@ -50,8 +67,16 @@ data_t Menu::update(void)
     return menu;
 }
 
+std::string addLibPrefix(const std::string filename)
+{
+    return "./lib/" + filename;
+}
+
 void Menu::handleEvent(event_t CurrentEvent)
 {
+    static size_t currentIndex = nbGames;
+    static size_t minIndex = 2;
+
     for (const auto &event: CurrentEvent.events) {
         if (event == A_KEY_UP) {
                 selectedIndex -= 1;
@@ -59,11 +84,26 @@ void Menu::handleEvent(event_t CurrentEvent)
         if (event == A_KEY_DOWN) {
                 selectedIndex += 1;
         }
+        if (event == A_KEY_ENTER) {
+            if (currentIndex == nbGames)
+                newlibs.game = addLibPrefix(menu.texts[selectedIndex].value);
+            if (currentIndex == nbGraphics) {
+                newlibs.graphic = addLibPrefix(menu.texts[selectedIndex].value);
+                menu.libs = newlibs;
+                currentIndex = nbGames;
+                minIndex = 2;
+                selectedIndex = 2;
+                break;
+            }
+            currentIndex = nbGraphics;
+            minIndex = nbGames + 2;
+            selectedIndex = minIndex;
+        }
     }
-    if (selectedIndex < 2)
-        selectedIndex = menu.texts.size() - 1;
-    if (selectedIndex > menu.texts.size() - 1)
-        selectedIndex = 2;
+    if (selectedIndex < minIndex)
+        selectedIndex = currentIndex;
+    if (selectedIndex > currentIndex)
+        selectedIndex = minIndex;
 }
 
 extern "C" arcade::IGame* makeGame() {
