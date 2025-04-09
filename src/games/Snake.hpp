@@ -10,6 +10,7 @@
 
     #include "IGame.hpp"
     #include <iostream>
+    #include <map>
 
     const size_t MAP_SIZE = 30;
 
@@ -38,9 +39,19 @@ class Snake : public arcade::IGame {
 
 /* ASSETS */
 
-const std::string TILES_ASSETS[2] {
-    "",
-    ""
+const std::map<char, std::string> TILES_ASSETS = {
+    {'#', " "},
+    {' ', " "}
+};
+
+enum color_e {
+    WHITE,
+    BLACK
+};
+
+const color_t TILES_COLOR[] {
+    {255, 255, 255, 255},
+    {0, 0, 0, 255}
 };
 
 const std::string BACKGROUND_ASSETS = "";

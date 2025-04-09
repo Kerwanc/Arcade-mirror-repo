@@ -28,21 +28,33 @@ void Snake::handleEvent(event_t events)
 
 }
 
+static entity_t createBgElement(vector_t pos, char type)
+{
+    entity_t element;
+
+    element.asset = TILES_ASSETS.at(type);
+    element.pos = pos;
+    element.color = TILES_COLOR[WHITE];
+    element.direction = UP;
+    element.character = type;
+    return element;
+}
+
 void Snake::generateMap(void)
 {
-    std::cerr << "ERROR 1" << std::endl;
+    char type = ' ';
+
     for (size_t y = 0; y < MAP_SIZE; y++) {
         map_.push_back({});
         for (size_t x = 0; x < MAP_SIZE; x++) {
-            std::cerr << "ERROR 2" << std::endl;
             if (isAtBorder(x, y)) {
-                map_[y].push_back({{3 * y, 3 * x}, '#'});
+                type = '#';
             } else {
-                map_[y].push_back({{3 * y, 3 * x}, '#'});;
+                type = ' ';
             }
-            std::cerr << map_[y][x].type << " ";
+            map_[y].push_back({{3 * y, 3 * x}, type});
+            data_.bg.push_back(createBgElement({3.0 * y, 3.0 * x}, type));
         }
-        std::cout << std::endl;
     }
 }
 
