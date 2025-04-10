@@ -12,6 +12,7 @@
     #include <unordered_map>
     #include <SDL2/SDL.h>
     #include <SDL2/SDL_image.h>
+    #include <SDL2/SDL_ttf.h>
     #include "IGraphic.hpp"
 
 class Sdl : public arcade::IGraphic {
@@ -20,6 +21,7 @@ class Sdl : public arcade::IGraphic {
         ~Sdl();
         event_t getEvent(void) override;
         void display(data_t data) override;
+        void displayText(text_t text);
 
     private:
         SDL_Window *window;

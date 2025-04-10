@@ -14,6 +14,7 @@
     #include <algorithm>
     #include <dlfcn.h>
     #include "IGame.hpp"
+    const std::string ARCADE_FONT = "./assets/arcade.ttf";
 
 class Menu : public arcade::IGame {
     public:

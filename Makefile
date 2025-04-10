@@ -37,7 +37,7 @@ CORE_OBJ			=	$(CORE:.cpp=.o)
 
 NCURSES_FLAGS		= 	-lncurses
 
-SDL_FLAGS 			=	-lSDL2 -lSDL2_image
+SDL_FLAGS 			=	-lSDL2 -lSDL2_image -lSDL2_ttf
 
 SFML_FLAGS 			=	-lsfml-graphics -lsfml-window -lsfml-system
 
