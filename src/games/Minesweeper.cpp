@@ -83,26 +83,26 @@ void Minesweeper::removeAnObjectByItsPos(int x, int y)
     }
 }
 
-void Minesweeper::markFlag(double x, double y)
+void Minesweeper::markFlag(vector_t mousePos)
 {
     entity_t flag = {};
     int column = 0;
     int line = 0;
 
-    x = PERCENTTOINDEX(x, game_params_.map_size.second, game_params_.tile_size);
-    y = PERCENTTOINDEX(y, game_params_.map_size.first, game_params_.tile_size);
-    column = (int)x;
-    line = (int)y;
-    if (x < 0 || x >= game_params_.map_size.second ||
-        y < 0 || y >= game_params_.map_size.first) {
+    mousePos.x = PERCENTTOINDEX(mousePos.x, game_params_.map_size.second, game_params_.tile_size);
+    mousePos.y = PERCENTTOINDEX(mousePos.y, game_params_.map_size.first, game_params_.tile_size);
+    column = (int)mousePos.x;
+    line = (int)mousePos.y;
+    if (mousePos.x < 0 || mousePos.x >= game_params_.map_size.second ||
+        mousePos.y < 0 || mousePos.y >= game_params_.map_size.first) {
             return;
         }
-    x = INDEXTOPERCENT(column, game_params_.map_size.second, game_params_.tile_size);
-    y = INDEXTOPERCENT(line, game_params_.map_size.first, game_params_.tile_size);
+    mousePos.x = INDEXTOPERCENT(column, game_params_.map_size.second, game_params_.tile_size);
+    mousePos.y = INDEXTOPERCENT(line, game_params_.map_size.first, game_params_.tile_size);
     if (map_[column][line].state == DISCOVERED)
         return;
     if (map_[column][line].state == FLAGED) {
-        removeAnObjectByItsPos(x, y);
+        removeAnObjectByItsPos(mousePos.x, mousePos.y);
         map_[column][line].state = COVERED;
         return;
     }
@@ -110,7 +110,7 @@ void Minesweeper::markFlag(double x, double y)
     flag.character = 'X';
     flag.direction = UP;
     flag.size = MAKE_VECTOR_T(game_params_.tile_size);
-    flag.pos = {x, y};
+    flag.pos = {mousePos.x, mousePos.y};
     if (map_[column][line].state == COVERED) {
         map_[column][line].state = FLAGED;
         data_.objects.push_back(flag);
@@ -155,7 +155,7 @@ void Minesweeper::handleEvent(event_t CurrentEvent)
             handleOver(CurrentEvent.mPos);
         }
         if (event == A_MOUSE_RIGHT) {
-            markFlag(CurrentEvent.mPos.x, CurrentEvent.mPos.y);
+            markFlag(CurrentEvent.mPos);
         }
     }
 }

@@ -45,9 +45,9 @@ class Minesweeper : public arcade::IGame {
         void generateMap(void);
         void insertARandomMine(size_t mines_placed);
         void increaseNeighboringTiles(uint8_t column, uint8_t line);
-        void markFlag(double x, double y);
         void removeAnObjectByItsPos(int x, int y);
         void handleOver(vector_t mousePos);
+        void markFlag(vector_t mousePos);
     private:
         data_t data_;
         std::vector<std::vector<tile_t>> map_;
