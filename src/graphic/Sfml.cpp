@@ -34,7 +34,8 @@ event_t SFML::getEvent()
         }
         if (sfml_event.type == sf::Event::MouseButtonPressed) {
             for (const auto &it : MOUSE_EVENT_LINK) {
-                event.events.push_back(it.first);
+                if (sfml_event.mouseButton.button == it.second)
+                    event.events.push_back(it.first);
             }
             event.mPos = {(double)mouse_pos.x / RESOLUTION.height * 100,
                 (double)mouse_pos.y / RESOLUTION.width * 100};

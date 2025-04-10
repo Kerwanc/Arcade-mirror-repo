@@ -16,8 +16,8 @@ static std::vector<entity_t> createBackground(conf_t game_params)
     std::vector<entity_t> background = {};
     entity_t temp = {};
     uint8_t parity = 0;
-    vector_t center = {GETBASEPOS(game_params.map_size.first, game_params.tile_size),
-        GETBASEPOS(game_params.map_size.second, game_params.tile_size)};
+    vector_t center = {GETBASEPOS(game_params.map_size.second, game_params.tile_size),
+        GETBASEPOS(game_params.map_size.first, game_params.tile_size)};
 
     temp.character = EMPTY_SYMBOL;
     temp.direction = UP;
@@ -70,13 +70,16 @@ void Minesweeper::generateMap(void)
     }
 }
 
-void Minesweeper::removeAnObjectByItsPos(uint8_t x, uint8_t y)
+void Minesweeper::removeAnObjectByItsPos(int x, int y)
 {
-    for(auto it = data_.objects.begin(); it != data_.objects.end(); it++) {
-        if (it->pos.x == (double)x
-        && it->pos.y == (double)y) {
-            data_.objects.erase(it);            
-        }
+    size_t index = 0;
+
+    for(auto it : data_.objects) {
+        if ((int)it.pos.x == x
+            && (int)it.pos.y == y) {
+                data_.objects.erase(data_.objects.begin() + index);
+            }
+        index++;
     }
 }
 
@@ -85,21 +88,21 @@ void Minesweeper::markFlag(double x, double y)
     entity_t flag = {};
     int column = 0;
     int line = 0;
-    double index_x = 0;
-    double index_y = 0;
 
-    index_x = ((x - GETBASEPOS(game_params_.map_size.first, game_params_.tile_size)) / game_params_.tile_size);
-    index_y = ((y - GETBASEPOS(game_params_.map_size.first, game_params_.tile_size)) / game_params_.tile_size);
-    column = (int)index_x;
-    line = (int)index_y;
-    if (index_x < 0 || index_x >= game_params_.map_size.first ||
-        index_y < 0 || index_y >= game_params_.map_size.second) {
+    x = PERCENTTOINDEX(x, game_params_.map_size.second, game_params_.tile_size);
+    y = PERCENTTOINDEX(y, game_params_.map_size.first, game_params_.tile_size);
+    column = (int)x;
+    line = (int)y;
+    if (x < 0 || x >= game_params_.map_size.second ||
+        y < 0 || y >= game_params_.map_size.first) {
             return;
         }
+    x = INDEXTOPERCENT(column, game_params_.map_size.second, game_params_.tile_size);
+    y = INDEXTOPERCENT(line, game_params_.map_size.first, game_params_.tile_size);
     if (map_[column][line].state == DISCOVERED)
         return;
     if (map_[column][line].state == FLAGED) {
-        removeAnObjectByItsPos(column, line);
+        removeAnObjectByItsPos(x, y);
         map_[column][line].state = COVERED;
         return;
     }
@@ -151,7 +154,7 @@ void Minesweeper::handleEvent(event_t CurrentEvent)
         if (event == A_MOUSE_MOVE) {
             handleOver(CurrentEvent.mPos);
         }
-        if (event == A_MOUSE_LEFT) {
+        if (event == A_MOUSE_RIGHT) {
             markFlag(CurrentEvent.mPos.x, CurrentEvent.mPos.y);
         }
     }
