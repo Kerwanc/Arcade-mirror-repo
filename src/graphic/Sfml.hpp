@@ -22,8 +22,6 @@ class SFML : public arcade::IGraphic {
         void createEntities(std::vector<entity_t> entities);
     private:
         sf::RenderWindow window_;
-        std::vector<sf::Sprite> sprites_;
-        std::vector<sf::RectangleShape> rectangles_;
 };
 
 const std::map<event_e, sf::Keyboard::Key> KEYBOARD_EVENT_LINK =

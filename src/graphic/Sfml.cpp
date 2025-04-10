@@ -52,37 +52,33 @@ event_t SFML::getEvent()
 }
 
 void SFML::createEntities(std::vector<entity_t> entities)
-{
-    std::vector<sf::Texture> textures;
-    sf::RectangleShape rectangle;
-    sf::Texture texture;
-
+{   
     for (const auto &entity : entities) {
         std::ifstream inputFile(entity.asset);
         if (inputFile) {
+            sf::Texture texture;
+            sf::Sprite sprite;
+            texture.loadFromFile(entity.asset);
+            sprite.scale(entity.size.x, entity.size.y);
+            sprite.setTexture(texture);
+            sprite.setPosition(entity.pos.x * window_.getSize().x / 100, entity.pos.y * window_.getSize().y / 100);
+            window_.draw(sprite);
         } else {
+            sf::RectangleShape rectangle;
             rectangle.setSize({(float)entity.size.x* window_.getSize().x / 100, (float)entity.size.y* window_.getSize().y / 100});
             rectangle.setFillColor(sf::Color{entity.color.r, entity.color.g, entity.color.b, entity.color.a});
             rectangle.setPosition(entity.pos.x * window_.getSize().x / 100, entity.pos.y * window_.getSize().y / 100);
-            rectangles_.push_back(rectangle);
+            window_.draw(rectangle);
         }
     }
 }
 
 void SFML::display(data_t data)
 {
-    rectangles_.clear();
-    sprites_.clear();
+    window_.clear();
     createEntities(data.bg);
     createEntities(data.objects);
     createEntities(data.ui);
-    window_.clear();
-    for (const auto &sprite : sprites_) {
-        window_.draw(sprite);
-    }
-    for (const auto &rectangle : rectangles_) {
-        window_.draw(rectangle);
-    }
     window_.display();
 }
 

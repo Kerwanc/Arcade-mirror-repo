@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <algorithm>
+#include <functional>
+#include <map>
 
 #include "Minesweeper.hpp"
 
@@ -139,8 +141,8 @@ data_t Minesweeper::update(void)
 void Minesweeper::handleOver(vector_t mousePos)
 {
     for (auto &tale : data_.bg) {
-        if (mousePos.x > tale.pos.x && mousePos.x < tale.pos.x + 3
-        && mousePos.y > tale.pos.y && mousePos.y < tale.pos.y + 3) {
+        if (mousePos.x > tale.pos.x && mousePos.x < tale.pos.x + game_params_.tile_size
+        && mousePos.y > tale.pos.y && mousePos.y < tale.pos.y + game_params_.tile_size) {
             tale.color.a = 200;
         }
         else
@@ -148,14 +150,44 @@ void Minesweeper::handleOver(vector_t mousePos)
     }
 }
 
+void Minesweeper::dig(vector_2int_t pos)
+{
+    entity_t tale = {};
+
+    tale.asset = ITEMS_ASSETS.find(map_[pos.x][pos.y].neighboring_cells)->second.asset;
+    tale.character = ITEMS_ASSETS.find(map_[pos.x][pos.y].neighboring_cells)->second.character;
+    tale.color = ITEMS_ASSETS.find(map_[pos.x][pos.y].neighboring_cells)->second.color;
+    tale.direction = UP;
+    tale.pos.x = INDEXTOPERCENT(pos.x, game_params_.map_size.second, game_params_.tile_size);
+    tale.pos.y = INDEXTOPERCENT(pos.y, game_params_.map_size.first, game_params_.tile_size);
+    tale.size = MAKE_VECTOR_T(game_params_.tile_size / 5);
+    data_.objects.push_back(tale);
+    map_[pos.x][pos.y].state = DISCOVERED;
+}
+
+void Minesweeper::handleLeftClick(vector_t mousePos)
+{
+    vector_t coordinate_on_map = {PERCENTTOINDEX(mousePos.x, game_params_.map_size.second,
+        game_params_.tile_size), PERCENTTOINDEX(mousePos.y, game_params_.map_size.first,
+        game_params_.tile_size)};
+    int column = (int)coordinate_on_map.x;
+    int line = (int)coordinate_on_map.y;
+
+    if (coordinate_on_map.x < 0 || coordinate_on_map.x > game_params_.map_size.second
+        || coordinate_on_map.y < 0 || coordinate_on_map.y > game_params_.map_size.first)
+        return;
+    if (map_[column][line].state == COVERED) {
+        dig({column, line});
+    }
+}
+
 void Minesweeper::handleEvent(event_t CurrentEvent)
 {
     for (const auto &event: CurrentEvent.events) {
-        if (event == A_MOUSE_MOVE) {
-            handleOver(CurrentEvent.mPos);
-        }
-        if (event == A_MOUSE_RIGHT) {
-            markFlag(CurrentEvent.mPos);
+        for (const auto &link : EVENT_HANDLER) {
+            if (event == link.first) {
+                link.second(*this, CurrentEvent.mPos);
+            }
         }
     }
 }
