@@ -17,6 +17,7 @@ GraphicSample::GraphicSample()
     curs_set(0);
     win = newwin(LINES, COLS, 0, 0);
     keypad(win, TRUE);
+    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     nodelay(win, TRUE);
 }
 
@@ -29,6 +30,7 @@ GraphicSample::~GraphicSample()
 event_t GraphicSample::getEvent()
 {
     event_t event;
+    MEVENT mouse;
     int ch = wgetch(win);
 
     if (ch == ERR)
@@ -39,7 +41,57 @@ event_t GraphicSample::getEvent()
         }
 
     }
+    if (ch == KEY_MOUSE) {
+        getmouse(&mouse);
+        if (mouse.bstate & BUTTON1_PRESSED) {
+            event.events.push_back(A_MOUSE_LEFT);
+            event.mPos.x = (double)mouse.x;
+            event.mPos.y = (double)mouse.y;
+        }
+        if (mouse.bstate & BUTTON3_PRESSED) {
+            event.events.push_back(A_MOUSE_RIGHT);
+            event.mPos.x = (double)mouse.x;
+            event.mPos.y = (double)mouse.y;
+        }
+    }
     return event;
+}
+
+void GraphicSample::displayEntities(const std::vector<entity_t>& entities, short& pairID, short& colorID)
+{
+    for (const auto& entity : entities) {
+        init_color(colorID,
+                   entity.color.r * 1000 / 255,
+                   entity.color.g * 1000 / 255,
+                   entity.color.b * 1000 / 255);
+
+        if (entity.character == ' ') {
+            init_pair(pairID, colorID, colorID);
+        } else {
+            init_pair(pairID, colorID, COLOR_BLACK);
+        }
+        wattron(win, COLOR_PAIR(pairID));
+        mvwaddch(win, entity.pos.y, entity.pos.x, entity.character);
+        wattroff(win, COLOR_PAIR(pairID));
+        colorID++;
+        pairID++;
+    }
+}
+
+void GraphicSample::displayTexts(const std::vector<text_t>& texts, short& pairID, short& colorID)
+{
+    for (const auto& text : texts) {
+        init_color(colorID,
+                   text.color.r * 1000 / 255,
+                   text.color.g * 1000 / 255,
+                   text.color.b * 1000 / 255);
+        init_pair(pairID, colorID, COLOR_BLACK);
+        wattron(win, COLOR_PAIR(pairID));
+        mvwprintw(win, text.pos.y, text.pos.x, "%s", text.value.c_str());
+        wattroff(win, COLOR_PAIR(pairID));
+        colorID++;
+        pairID++;
+    }
 }
 
 void GraphicSample::display(data_t data)
@@ -48,41 +100,13 @@ void GraphicSample::display(data_t data)
     short colorID = 11;
 
     wclear(win);
-    for (const auto &entity: data.bg) {
-        init_color(colorID, entity.color.r * 1000 / 255, entity.color.g * 1000 / 255, entity.color.b * 1000 / 255);
-        init_pair(pairID, colorID, COLOR_BLACK);
-        wattron(win, COLOR_PAIR(pairID));
-        mvwaddch(win, entity.pos.y, entity.pos.x, entity.character);
-        colorID += 1;
-        pairID += 1;
-    }
-    for (const auto &entity : data.objects) {
-        init_color(colorID, entity.color.r * 1000 / 255, entity.color.g * 1000 / 255, entity.color.b * 1000 / 255);
-        init_pair(pairID, colorID, COLOR_BLACK);
-        wattron(win, COLOR_PAIR(pairID));
-        mvwaddch(win, entity.pos.y, entity.pos.x, entity.character);
-        colorID += 1;
-        pairID += 1;
-    }
-    for (const auto &entity : data.ui) {
-        init_color(colorID, entity.color.r * 1000 / 255, entity.color.g * 1000 / 255, entity.color.b * 1000 / 255);
-        init_pair(pairID, colorID, COLOR_BLACK);
-        wattron(win, COLOR_PAIR(pairID));
-        mvwaddch(win, entity.pos.y, entity.pos.x, entity.character);
-        colorID += 1;
-        pairID += 1;
-    }
-    for (const auto &text : data.texts) {
-        init_color(colorID, text.color.r * 1000 / 255, text.color.g * 1000 / 255, text.color.b * 1000 / 255);
-        init_pair(pairID, colorID, COLOR_BLACK);
-        wattron(win, COLOR_PAIR(pairID));
-        mvwprintw(win, text.pos.y, text.pos.x, "%s", text.value.c_str());
-        wattroff(win, COLOR_PAIR(pairID));
-        colorID += 1;
-        pairID += 1;
-    }
+    displayEntities(data.bg, pairID, colorID);
+    displayEntities(data.objects, pairID, colorID);
+    displayEntities(data.ui, pairID, colorID);
+    displayTexts(data.texts, pairID, colorID);
     wrefresh(win);
 }
+
 
 extern "C" arcade::IGraphic* makeGraphic()
 {

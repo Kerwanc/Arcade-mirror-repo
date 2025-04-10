@@ -22,6 +22,8 @@ class GraphicSample : public arcade::IGraphic {
         ~GraphicSample();
         event_t getEvent(void) override;
         void display(data_t data) override;
+        void displayTexts(const std::vector<text_t>& texts, short& pairID, short& colorID);
+        void displayEntities(const std::vector<entity_t>& entities, short& pairID, short& colorID);
 
     private:
         WINDOW *win;
