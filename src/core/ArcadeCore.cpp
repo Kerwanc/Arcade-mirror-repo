@@ -67,15 +67,18 @@ void arcade::ArcadeCore::menuReloading(const data_t& data)
     return run();
 }
 
-void arcade::ArcadeCore::reloadLibs(void)
+bool arcade::ArcadeCore::reloadLibs(void)
 {
     if (!graphic_) {
         load(allgraphics_[graphicIndex], GRAPHIC_LIB);
-        return run();
+        run();
+        return true;
     } else if (!game_) {
         load(allgames_[gameIndex], GAME_LIB);
-        return run();
+        run();
+        return true;
     }
+    return false;
 }
 
 void arcade::ArcadeCore::run()
@@ -92,7 +95,8 @@ void arcade::ArcadeCore::run()
         graphic_->display(data);
         if (handleInstructions(instructions, prevData, data)) 
             return;
-        reloadLibs();
+        if (reloadLibs())
+            return;
         prevData = data;
     }
 }
