@@ -64,6 +64,30 @@ event_t Sdl::getEvent()
     return event;
 }
 
+void Sdl::displayText(text_t text)
+{
+    TTF_Font *font = TTF_OpenFont(text.fontPath.c_str(), text.fontSize);
+    if (!font)
+        return;
+    SDL_Color sdlColor = {text.color.r, text.color.g, text.color.b, 255};
+    SDL_Surface *surface = TTF_RenderText_Blended(font, text.value.c_str(), sdlColor);
+    if (!surface) {
+        TTF_CloseFont(font);
+        return;
+    }
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect destRect = {
+        static_cast<int>(text.pos.x * 1000 / 100),
+        static_cast<int>(text.pos.y * 1000 / 100),
+        surface->w,
+        surface->h
+    };
+    SDL_RenderCopy(renderer, texture, nullptr, &destRect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+    TTF_CloseFont(font);
+}
+
 void Sdl::display(data_t data)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -83,26 +107,7 @@ void Sdl::display(data_t data)
     for (const auto &entity : data.ui) {
     }
     for (const auto &text : data.texts) {
-        TTF_Font *font = TTF_OpenFont(text.fontPath.c_str(), text.fontSize);
-        if (!font)
-            continue;
-        SDL_Color sdlColor = {text.color.r, text.color.g, text.color.b, 255};
-        SDL_Surface *surface = TTF_RenderText_Blended(font, text.value.c_str(), sdlColor);
-        if (!surface) {
-            TTF_CloseFont(font);
-            continue;
-        }
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_Rect destRect = {
-            static_cast<int>(text.pos.x * 1000 / 100),
-            static_cast<int>(text.pos.y * 1000 / 100),
-            surface->w,
-            surface->h
-        };
-        SDL_RenderCopy(renderer, texture, nullptr, &destRect);
-        SDL_FreeSurface(surface);
-        SDL_DestroyTexture(texture);
-        TTF_CloseFont(font);
+        displayText(text);
     }
     SDL_RenderPresent(renderer);
 }

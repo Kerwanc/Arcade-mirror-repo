@@ -21,6 +21,7 @@ class Sdl : public arcade::IGraphic {
         ~Sdl();
         event_t getEvent(void) override;
         void display(data_t data) override;
+        void displayText(text_t text);
 
     private:
         SDL_Window *window;
