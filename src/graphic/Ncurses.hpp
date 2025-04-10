@@ -10,6 +10,7 @@
 
     #include <ncurses.h> 
     #include <iostream>
+    #include <map>
     #include <memory>
     #include "IGraphic.hpp"
     constexpr int KEY_PRESSED_ENTER = 10;
@@ -24,6 +25,17 @@ class GraphicSample : public arcade::IGraphic {
 
     private:
         WINDOW *win;
+};
+
+const std::map<event_e, int> KEYBOARD_EVENT_LINK =
+{
+    {A_KEY_A, 'a'},
+    {A_KEY_ESC, KEY_PRESSED_ESC},
+    {A_KEY_UP, KEY_UP},
+    {A_KEY_LEFT, KEY_LEFT},
+    {A_KEY_RIGHT, KEY_RIGHT},
+    {A_KEY_DOWN, KEY_DOWN   },
+    {A_KEY_ENTER, KEY_PRESSED_ENTER}
 };
 
 extern "C" arcade::IGraphic* makeGraphic();

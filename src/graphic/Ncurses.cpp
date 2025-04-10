@@ -17,6 +17,7 @@ GraphicSample::GraphicSample()
     curs_set(0);
     win = newwin(LINES, COLS, 0, 0);
     keypad(win, TRUE);
+    nodelay(win, TRUE);
 }
 
 GraphicSample::~GraphicSample()
@@ -30,33 +31,13 @@ event_t GraphicSample::getEvent()
     event_t event;
     int ch = wgetch(win);
 
-    switch (ch) {
-        case KEY_PRESSED_ESC:
-            event.events.push_back(A_KEY_ESC);
-            break;
-        case 'a':
-            event.events.push_back(A_KEY_A);
-            break;
-        case 'b':
-            event.events.push_back(A_KEY_B);
-            break;
-        case KEY_UP:
-            event.events.push_back(A_KEY_UP);
-            break;
-        case KEY_DOWN:
-            event.events.push_back(A_KEY_DOWN);
-            break;
-        case KEY_LEFT:
-            event.events.push_back(A_KEY_LEFT);
-            break;
-        case KEY_RIGHT:
-            event.events.push_back(A_KEY_RIGHT);
-            break;
-        case KEY_PRESSED_ENTER:
-            event.events.push_back(A_KEY_ENTER);
-            break;
-        default:
-            break;
+    if (ch == ERR)
+        return event;
+    for (const auto &key: KEYBOARD_EVENT_LINK) {
+        if (ch == key.second) {
+            event.events.push_back(key.first);
+        }
+
     }
     return event;
 }

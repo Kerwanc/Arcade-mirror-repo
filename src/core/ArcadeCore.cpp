@@ -90,7 +90,7 @@ void arcade::ArcadeCore::run()
         game_->handleEvent(instructions);
         data = game_->update();
         graphic_->display(data);
-        if (handleInstructions(instructions, prevData, data))
+        if (handleInstructions(instructions, prevData, data)) 
             return;
         reloadLibs();
         prevData = data;
@@ -107,6 +107,7 @@ bool arcade::ArcadeCore::handleInstructions(const event_t& instructions, const d
         if (prevData.libs.game != data.libs.game ||
             prevData.libs.graphic != data.libs.graphic) {
             menuReloading(data);
+            return true;
         }
     }
     return false;
@@ -162,15 +163,15 @@ arcade::ArcadeCore::ArcadeCore(int argc, const char *argv[])
     currentLib = libPath;
     allgames_ = getAllGames();
     allgraphics_ = getAllGraphics();
+    gameIndex = 0;
+    graphicIndex = indexOfCurrentLib(currentLib, allgraphics_);
+    if (graphicIndex == -1)
+        throw Error("Error: current lib isn't in lib directory");
 
     DLLoaderGraphic<IGraphic> loader(currentLib);
     graphic_.reset(loader.getInstance());
 
     DLLoaderGame<IGame> menu_loader(MENU_PATH);
     game_.reset(menu_loader.getInstance());
-    gameIndex = 0;
-    graphicIndex = indexOfCurrentLib(currentLib, allgraphics_);
-    if (graphicIndex == -1)
-        throw Error("Error: current lib isn't in lib directory");
     run();
 }
