@@ -12,10 +12,16 @@
     #include <iostream>
     #include <map>
 
+    #define SNAKE_CONTACT(snakeHead, object) \
+                         (bool(snakeHead.x == object.x && \
+                               snakeHead.y == object.y))
+
     const size_t MAP_SIZE = 30;
     const size_t SNAKE_INIT_SIZE = 3;
-    const vector_t CENTERING = {50, 10};
+    const vector_t CENTERING = {35, 30};
     const vector_t SNAKE_START = {50, 50};
+    const vector_t NEUTRAL_SIZE = {1, 1};
+
 
 
 typedef struct coord_s {
@@ -43,6 +49,7 @@ class Snake : public arcade::IGame {
         event_e direction_;
         std::vector<std::vector<tileInfo_t>> map_;
         std::vector<entity_t> snake_;
+        entity_t apple_;
 };
 
 /* ASSETS */
@@ -54,21 +61,30 @@ const std::map<char, std::string> TILES_ASSETS = {
     {'>', " "},
     {'^', " "},
     {'+', " "},
-    {'X', " "}
+    {'X', " "},
+    {'O', " "}
 };
 
 
-typedef struct ratioValues_s {
+typedef struct factorValues_s {
     char character;
-    vector_t ratio;
-} ratioValues_t;
+    vector_t factor;
+} factorValues_t;
 
-const std::map<event_e, ratioValues_t> DIRECTIONS_RATIO =
+const std::map<event_e, factorValues_t> DIRECTIONS_FACTOR =
 {
     {A_KEY_DOWN, {'+', {0.0, 1}}},
     {A_KEY_LEFT, {'<', {-1, 0.0}}},
     {A_KEY_RIGHT, {'>', {1, 0.0}}},
     {A_KEY_UP, {'^', {0.0, -1}}}
+};
+
+const std::map<event_e, event_e> OPPOSITES =
+{
+    {A_KEY_DOWN, A_KEY_UP},
+    {A_KEY_LEFT, A_KEY_RIGHT},
+    {A_KEY_RIGHT, A_KEY_LEFT},
+    {A_KEY_UP, A_KEY_DOWN}
 };
 
 enum color_e {

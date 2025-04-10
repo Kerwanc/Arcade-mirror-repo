@@ -38,12 +38,34 @@ static std::vector<entity_t> setSnake(void)
 
     for (size_t i = 0; i < SNAKE_INIT_SIZE; i++) {
         if (i == 0) {
-            snake.push_back(createSnakePart('<', YELLOW, SNAKE_START, {1.0, 1.0}));
+            snake.push_back(createSnakePart('<', YELLOW, SNAKE_START, NEUTRAL_SIZE));
         } else {
-            snake.push_back(createSnakePart('X', GREEN, {SNAKE_START.x + i, SNAKE_START.y}, {1.0, 1.0}));
+            snake.push_back(createSnakePart('X', GREEN, {SNAKE_START.x + i, SNAKE_START.y}, NEUTRAL_SIZE));
         }
     }
     return snake;
+}
+
+static vector_t setApplePos(void)
+{
+    vector_t applePos = {
+        (CENTERING.x + 1) + (rand() % MAP_SIZE),
+        (CENTERING.y + 1) + (rand() % MAP_SIZE)
+    };
+    return applePos;
+}
+
+static entity_t setApple(void)
+{
+    entity_t apple;
+
+    apple.asset = TILES_ASSETS.at('O');
+    apple.pos = setApplePos();
+    apple.color = TILES_COLOR[RED];
+    apple.direction = LEFT;
+    apple.character = 'O';
+    apple.size = NEUTRAL_SIZE;
+    return apple;
 }
 
 Snake::Snake()
@@ -52,42 +74,68 @@ Snake::Snake()
     snake_ = setSnake();
     for (auto snakePart : snake_)
         data_.objects.push_back(snakePart);
+    apple_ = setApple();
+    data_.objects.push_back(apple_);
     clock_ = 0;
     direction_ = A_KEY_LEFT;
 }
 
 void Snake::moveSnake(event_e directionKey)
 {
+    char headCOntactType = ' ';
     vector_t actualPose = snake_.front().pos;
-    vector_t direction = DIRECTIONS_RATIO.at(directionKey).ratio;
+    vector_t direction = DIRECTIONS_FACTOR.at(directionKey).factor;
     vector_t newPose = {actualPose.x + direction.x,
                         actualPose.y + direction.y};
 
-    snake_.front().character = DIRECTIONS_RATIO.at(directionKey).character;
+    headCOntactType = map_[newPose.y - CENTERING.y]
+                          [newPose.x - CENTERING.x].type;
+    if (headCOntactType!= ' ') {
+        map_.clear();
+        data_.bg.clear();
+        generateMap();
+        snake_.clear();
+        snake_ = setSnake();
+        return;
+    }
+    snake_.front().character = DIRECTIONS_FACTOR.at(directionKey).character;
     for (auto &snakePart : snake_) {
         actualPose = snakePart.pos;
         snakePart.pos = newPose;
         newPose = actualPose;
+    }
+    if (SNAKE_CONTACT(snake_.front().pos, apple_.pos)) {
+        snake_.push_back(createSnakePart('X', GREEN, newPose, NEUTRAL_SIZE));
+        apple_.pos = setApplePos();
+    } else {
+        map_[newPose.y - CENTERING.y]
+            [newPose.x - CENTERING.x].type = ' ';
+    }
+    for (auto snakePart : snake_) {
+        map_[snakePart.pos.y - CENTERING.y][snakePart.pos.x - CENTERING.x].type
+        = snakePart.character;
     }
 }
 
 void Snake::handleEvent(event_t latestEvent)
 {
     data_.objects.clear();
-
     for (auto event : latestEvent.events) {
-        if (DIRECTIONS_RATIO.contains(event)) {
-            direction_ = event;
+        if (DIRECTIONS_FACTOR.contains(event)) {
+            if (OPPOSITES.at(event) != direction_)
+                direction_ = event;
         }
     }
-    if (clock_ == 50) {
+    if (clock_ >= 50) {
         moveSnake(direction_);
         clock_ = 0;
     } else {
         clock_ += 1;
     }
-    for (auto snakePart : snake_)
+    for (auto snakePart : snake_) {
         data_.objects.push_back(snakePart);
+    }
+    data_.objects.push_back(apple_);
 }
 
 static entity_t createBgElement(vector_t size, vector_t pos, char type)
@@ -119,8 +167,8 @@ void Snake::generateMap(void)
             } else {
                 type = ' ';
             }
-            map_[y].push_back({{trueY, trueX}, type});
-            data_.bg.push_back(createBgElement({1.0, 1.0}, {(double)trueY, (double)trueX}, type));
+            map_[y].push_back({{trueX, trueY}, type});
+            data_.bg.push_back(createBgElement(NEUTRAL_SIZE, {(double)trueX, (double)trueY,}, type));
         }
     }
 }
