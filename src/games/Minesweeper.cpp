@@ -23,6 +23,10 @@ static std::vector<entity_t> createBackground(conf_t game_params)
 
     temp.character = EMPTY_SYMBOL;
     temp.direction = UP;
+    temp.pos = MAKE_VECTOR_T(DEFAULT_POS);
+    temp.size = MAKE_VECTOR_T(FILL_SIZE);
+    temp.color = BACKGROUND_COLOR;
+    background.push_back(temp);
     temp.size = MAKE_VECTOR_T(game_params.tile_size);
     for (double column = 0; column < game_params.map_size.second; column++) {
         for (double line = 0; line < game_params.map_size.first; line++) {
@@ -108,8 +112,9 @@ void Minesweeper::markFlag(vector_t mousePos)
         map_[column][line].state = COVERED;
         return;
     }
-    flag.color = FLAG_COLOR;
-    flag.character = 'X';
+    flag.asset = FLAG_INFO_DISPLAY.asset;
+    flag.character = FLAG_INFO_DISPLAY.character;
+    flag.color = FLAG_INFO_DISPLAY.color;
     flag.direction = UP;
     flag.size = MAKE_VECTOR_T(game_params_.tile_size);
     flag.pos = {mousePos.x, mousePos.y};
@@ -154,13 +159,13 @@ void Minesweeper::dig(vector_2int_t pos)
 {
     entity_t tale = {};
 
-    tale.asset = ITEMS_ASSETS.find(map_[pos.x][pos.y].neighboring_cells)->second.asset;
-    tale.character = ITEMS_ASSETS.find(map_[pos.x][pos.y].neighboring_cells)->second.character;
-    tale.color = ITEMS_ASSETS.find(map_[pos.x][pos.y].neighboring_cells)->second.color;
+    tale.asset = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.asset;
+    tale.character = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.character;
+    tale.color = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.color;
     tale.direction = UP;
     tale.pos.x = INDEXTOPERCENT(pos.x, game_params_.map_size.second, game_params_.tile_size);
     tale.pos.y = INDEXTOPERCENT(pos.y, game_params_.map_size.first, game_params_.tile_size);
-    tale.size = MAKE_VECTOR_T(game_params_.tile_size / 5);
+    tale.size = MAKE_VECTOR_T(game_params_.tile_size);
     data_.objects.push_back(tale);
     map_[pos.x][pos.y].state = DISCOVERED;
 }

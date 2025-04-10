@@ -7,6 +7,8 @@
 
 #ifndef SFML_H
     #define SFML_H
+    #define INTO_PERCENT(x) (x / 100)
+    #define FROM_PERCENT(x) (x * 100)
 
     #include <SFML/Window.hpp>
     #include <SFML/Graphics.hpp>

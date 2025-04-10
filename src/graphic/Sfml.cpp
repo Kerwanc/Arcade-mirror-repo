@@ -29,16 +29,16 @@ event_t SFML::getEvent()
     while(window_.pollEvent(sfml_event)) {
         if (sfml_event.type == sf::Event::MouseMoved) {
             event.events.push_back(A_MOUSE_MOVE);
-            event.mPos = {(double)mouse_pos.x / RESOLUTION.height * 100,
-                (double)mouse_pos.y / RESOLUTION.width * 100};
+            event.mPos = {FROM_PERCENT((double)mouse_pos.x / RESOLUTION.height),
+                FROM_PERCENT((double)mouse_pos.y / RESOLUTION.width)};
         }
         if (sfml_event.type == sf::Event::MouseButtonPressed) {
             for (const auto &it : MOUSE_EVENT_LINK) {
                 if (sfml_event.mouseButton.button == it.second)
                     event.events.push_back(it.first);
             }
-            event.mPos = {(double)mouse_pos.x / RESOLUTION.height * 100,
-                (double)mouse_pos.y / RESOLUTION.width * 100};
+            event.mPos = {FROM_PERCENT((double)mouse_pos.x / RESOLUTION.height),
+                FROM_PERCENT((double)mouse_pos.y / RESOLUTION.width)};
         }
         if (sfml_event.type == sf::Event::KeyPressed) {
             for (const auto &it : KEYBOARD_EVENT_LINK) {
@@ -59,15 +59,18 @@ void SFML::createEntities(std::vector<entity_t> entities)
             sf::Texture texture;
             sf::Sprite sprite;
             texture.loadFromFile(entity.asset);
-            sprite.scale(entity.size.x, entity.size.y);
+            sf::Vector2u texture_size = texture.getSize();
+            sf::Vector2f scaler = {float(entity.size.x / (texture_size.x / INTO_PERCENT(RESOLUTION.width))),
+                float(entity.size.y / (texture_size.y / INTO_PERCENT(RESOLUTION.height)))};
+            sprite.scale(scaler.x, scaler.y);
             sprite.setTexture(texture);
-            sprite.setPosition(entity.pos.x * window_.getSize().x / 100, entity.pos.y * window_.getSize().y / 100);
+            sprite.setPosition(entity.pos.x * INTO_PERCENT(window_.getSize().x), entity.pos.y * INTO_PERCENT(window_.getSize().y));
             window_.draw(sprite);
         } else {
             sf::RectangleShape rectangle;
-            rectangle.setSize({(float)entity.size.x* window_.getSize().x / 100, (float)entity.size.y* window_.getSize().y / 100});
+            rectangle.setSize({(float)entity.size.x* INTO_PERCENT(window_.getSize().x), (float)entity.size.y* INTO_PERCENT(window_.getSize().y)});
             rectangle.setFillColor(sf::Color{entity.color.r, entity.color.g, entity.color.b, entity.color.a});
-            rectangle.setPosition(entity.pos.x * window_.getSize().x / 100, entity.pos.y * window_.getSize().y / 100);
+            rectangle.setPosition(entity.pos.x * INTO_PERCENT(window_.getSize().x), entity.pos.y * INTO_PERCENT(window_.getSize().y));
             window_.draw(rectangle);
         }
     }

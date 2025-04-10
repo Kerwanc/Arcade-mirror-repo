@@ -70,6 +70,8 @@ class Minesweeper : public arcade::IGame {
 const char EMPTY_SYMBOL = ' ';
 const uint8_t DIFFICULTY_AVAILABLE = 2;
 const uint8_t DEFAULT_DIFFICULTY = 2;
+const uint8_t DEFAULT_POS = 0;
+const uint8_t FILL_SIZE = 100;
 
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
     {{9, 9}, 5, 10},
@@ -85,7 +87,6 @@ const color_t TILES_COLOR[2] {
 };
 
 const color_t BACKGROUND_COLOR = {2, 130, 0, 255};
-const color_t FLAG_COLOR = {200, 0, 0, 255};
 
 /* ASSETS */
 
@@ -102,7 +103,9 @@ typedef struct info_display_s {
     color_t color;
 } info_display_t;
 
-const std::map<int8_t, info_display_t> ITEMS_ASSETS =
+const info_display_t FLAG_INFO_DISPLAY = {"./lib/assets/arcade_minesweeper/flag.png", 'P', {200, 0, 0, 255}};
+
+const std::map<int8_t, info_display_t> ITEMS_INFO_DISPLAY =
 {
     {-1, {"./lib/assets/arcade_minesweeper/mine.png", 'O', {0, 0, 0, 255}}},
     {0, {"./lib/assets/arcade_minesweeper/empty_tile.png", ' ', {0xff, 0xff, 0xff, 255}}},
