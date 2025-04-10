@@ -14,9 +14,9 @@ Menu::Menu()
     double Pos = 10;
 
     menu.bg.push_back({{0,0}, {1920,1080}, 0, "./assets/Arcade_background.png", {0,0,0, 255}, UP});
-    menu.texts.push_back({{45, Pos}, 20, "Arcade Menu:", "", {255, 255, 255, 255}});
+    menu.texts.push_back({{45, Pos}, 20, "Arcade Menu:", ARCADE_FONT, {255, 255, 255, 255}});
     Pos = Pos + 3;
-    menu.texts.push_back({{44, Pos}, 20, "Select Your Game !", "", {255, 255, 255, 255}});
+    menu.texts.push_back({{44, Pos}, 20, "Select Your Game !", ARCADE_FONT, {255, 255, 255, 255}});
     for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
         handle = dlopen(entry.path().c_str(), RTLD_LAZY);
         if (!handle)
@@ -27,12 +27,12 @@ Menu::Menu()
         dlclose(handle);
         if (entry.is_regular_file() && entry.path().filename().string().find('.')) {
             Pos = Pos + 3;
-            menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), "", {200, 200, 200, 255}});
+            menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
         }
     }
     nbGames = menu.texts.size() - 1;
     Pos = Pos + 3;
-    menu.texts.push_back({{44, Pos}, 20, "Select Your Graphic !", "", {255, 255, 255, 255}});
+    menu.texts.push_back({{44, Pos}, 20, "Select Your Graphic !", ARCADE_FONT, {255, 255, 255, 255}});
     for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
         handle = dlopen(entry.path().c_str(), RTLD_LAZY);
         if (!handle)
@@ -43,7 +43,7 @@ Menu::Menu()
         dlclose(handle);
         if (entry.is_regular_file() && entry.path().filename().string().find('.')) {
             Pos += 3;
-            menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), "", {200, 200, 200, 255}});
+            menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
         }
     }
     nbGraphics = menu.texts.size() - 1;

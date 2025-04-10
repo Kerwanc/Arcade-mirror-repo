@@ -11,6 +11,7 @@
 Sdl::Sdl()
 {
     SDL_Init(SDL_INIT_VIDEO);
+    TTF_Init();
     window = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 1000, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
 }
@@ -19,6 +20,7 @@ Sdl::~Sdl()
 {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
 }
 
@@ -51,6 +53,9 @@ event_t Sdl::getEvent()
                 case SDLK_RIGHT:
                     event.events.push_back(A_KEY_RIGHT);
                     break;
+                case SDLK_RETURN:
+                    event.events.push_back(A_KEY_ENTER);
+                    break;
                 default:
                     break;
             }
@@ -70,16 +75,35 @@ void Sdl::display(data_t data)
             SDL_Rect rect = {(int)entity.pos.x, (int)entity.pos.y, (int)entity.size.x, (int)entity.size.y};
             SDL_RenderCopy(renderer, texture, nullptr, &rect);
         }
+        SDL_DestroyTexture(texture);
     }
     for (const auto &entity : data.objects) {
     }
 
     for (const auto &entity : data.ui) {
     }
-
     for (const auto &text : data.texts) {
+        TTF_Font *font = TTF_OpenFont(text.fontPath.c_str(), text.fontSize);
+        if (!font)
+            continue;
+        SDL_Color sdlColor = {text.color.r, text.color.g, text.color.b, 255};
+        SDL_Surface *surface = TTF_RenderText_Blended(font, text.value.c_str(), sdlColor);
+        if (!surface) {
+            TTF_CloseFont(font);
+            continue;
+        }
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_Rect destRect = {
+            static_cast<int>(text.pos.x * 1000 / 100),
+            static_cast<int>(text.pos.y * 1000 / 100),
+            surface->w,
+            surface->h
+        };
+        SDL_RenderCopy(renderer, texture, nullptr, &destRect);
+        SDL_FreeSurface(surface);
+        SDL_DestroyTexture(texture);
+        TTF_CloseFont(font);
     }
-
     SDL_RenderPresent(renderer);
 }
 
