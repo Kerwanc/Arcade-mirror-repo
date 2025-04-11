@@ -22,6 +22,7 @@ class SFML : public arcade::IGraphic {
         event_t getEvent(void) override;
         void display(data_t data) override;
         void createEntities(std::vector<entity_t> entities);
+        void createTexts(std::vector<text_t> texts);
     private:
         sf::RenderWindow window_;
 };

@@ -76,12 +76,34 @@ void SFML::createEntities(std::vector<entity_t> entities)
     }
 }
 
+void SFML::createTexts(std::vector <text_t> texts)
+{
+    for (const auto &element : texts) {
+        std::ifstream inputFile(element.fontPath);
+        sf::Font font;
+        sf::Text text;
+        if (inputFile) {
+            font.loadFromFile(element.fontPath);
+            text.setFont(font);
+        }
+        if (!element.value.empty()) {
+            text.setString(element.value);
+        }
+        text.setCharacterSize(element.fontSize);
+        text.setFillColor((sf::Color) {element.color.r, element.color.g, element.color.b, element.color.a});
+        text.setPosition(element.pos.x * INTO_PERCENT(window_.getSize().x), element.pos.y * INTO_PERCENT(window_.getSize().y));
+        window_.draw(text);
+    }
+
+}
+
 void SFML::display(data_t data)
 {
     window_.clear();
     createEntities(data.bg);
     createEntities(data.objects);
     createEntities(data.ui);
+    createTexts(data.texts);
     window_.display();
 }
 
