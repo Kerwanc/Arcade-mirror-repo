@@ -59,17 +59,22 @@ class Minesweeper : public arcade::IGame {
         void dig(vector_2int_t pos);
         void createUi();
         void updateMineDisplayer();
+        void lose();
+        void reveal_cell(vector_2int_t pos);
+        void changeDifficulty(vector_t mousePos);
     private:
         data_t data_;
         std::vector<std::vector<tile_t>> map_;
         conf_t game_params_;
         bool start_digging_;
+        uint8_t difficulty_;
         const std::map<event_e, std::function<void(Minesweeper &, vector_t)>> EVENT_HANDLER =
         {
             {A_MOUSE_MOVE, &Minesweeper::handleOver},
             {A_MOUSE_LEFT, &Minesweeper::handleLeftClick},
             {A_MOUSE_RIGHT, &Minesweeper::markFlag},
-            {A_KEY_ESC, &Minesweeper::switchToMenu}
+            {A_KEY_ESC, &Minesweeper::switchToMenu},
+            {A_KEY_ENTER, &Minesweeper::changeDifficulty}
         };
 };
 
@@ -91,7 +96,7 @@ const color_t UI_FLAG_NB_COLOR = {255, 255, 255, 255};
 const std::string MENU_PATH = "./lib/arcade_menu.so";
 
 const uint8_t DIFFICULTY_AVAILABLE = 2;
-const uint8_t DEFAULT_DIFFICULTY = 1;
+const uint8_t DEFAULT_DIFFICULTY = 0;
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
     {{9, 9}, 5, 10},
     {{16, 16}, 4, 40},

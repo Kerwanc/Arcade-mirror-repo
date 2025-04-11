@@ -198,9 +198,27 @@ void Minesweeper::markFlag(vector_t mousePos)
     updateMineDisplayer();
 }
 
-Minesweeper::Minesweeper() : start_digging_(false)
+void Minesweeper::changeDifficulty(vector_t)
 {
-    game_params_ = DIFFICULTY_PARAMS[DEFAULT_DIFFICULTY];
+    map_.clear();
+    data_.bg.clear();
+    data_.objects.clear();
+    data_.ui.clear();
+    data_.audios.clear();
+    data_.texts.clear();
+    start_digging_ = false;
+    difficulty_++;
+    if (difficulty_ > 2)
+        difficulty_ = 0;
+    game_params_ = DIFFICULTY_PARAMS[difficulty_];
+    data_.bg = createBackground(game_params_);
+    createUi();
+    generateMap();
+}
+
+Minesweeper::Minesweeper() : start_digging_(false), difficulty_(DEFAULT_DIFFICULTY)
+{
+    game_params_ = DIFFICULTY_PARAMS[difficulty_];
     data_.bg = createBackground(game_params_);
     createUi();
     generateMap();
@@ -225,17 +243,10 @@ void Minesweeper::handleOver(vector_t mousePos)
     }
 }
 
-void Minesweeper::dig(vector_2int_t pos)
+void Minesweeper::reveal_cell(vector_2int_t pos)
 {
     entity_t tale = {};
 
-    if (start_digging_ == false) {
-        placeMines(pos);
-        start_digging_ = true;
-    }
-    if (map_[pos.x][pos.y].state != COVERED) {
-        return;
-    }
     tale.asset = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.asset;
     tale.character = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.character;
     tale.color = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.color;
@@ -245,6 +256,34 @@ void Minesweeper::dig(vector_2int_t pos)
     tale.size = MAKE_VECTOR_T(game_params_.tile_size);
     data_.objects.push_back(tale);
     map_[pos.x][pos.y].state = DISCOVERED;
+}
+
+void Minesweeper::lose()
+{
+    for (uint8_t column = 0; column < game_params_.map_size.second; column++) {
+        for (uint8_t line = 0; line < game_params_.map_size.first; line++) {
+            if (map_[column][line].neighboring_cells == MINE) {
+                reveal_cell({column, line});
+            }
+            map_[column][line].state = DISCOVERED;
+        }
+    }
+}
+
+
+void Minesweeper::dig(vector_2int_t pos)
+{
+    if (start_digging_ == false) {
+        placeMines(pos);
+        start_digging_ = true;
+    }
+    if (map_[pos.x][pos.y].state != COVERED) {
+        return;
+    }
+    reveal_cell(pos);
+    if (map_[pos.x][pos.y].neighboring_cells == MINE) {
+        lose();
+    }
     if (map_[pos.x][pos.y].neighboring_cells != EMPTY_TILE) {
         return;
     }
@@ -254,7 +293,6 @@ void Minesweeper::dig(vector_2int_t pos)
             && pos.y + y >= 0 && pos.y + y < game_params_.map_size.first) {
                 dig({pos.x + x, pos.y + y});
             }
-                
         }
     }
 }
