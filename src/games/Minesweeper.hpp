@@ -22,7 +22,7 @@
 typedef struct conf_s {
     std::pair<uint8_t, uint8_t> map_size;
     size_t tile_size;
-    size_t mines_nb;
+    int mines_nb;
 }   conf_t;
 
 enum tile_state_e {
@@ -57,6 +57,7 @@ class Minesweeper : public arcade::IGame {
         void handleLeftClick(vector_t mousePos);
         void switchToMenu(vector_t mousePos);
         void dig(vector_2int_t pos);
+        void createUi();
         void updateMineDisplayer();
     private:
         data_t data_;
@@ -74,15 +75,23 @@ class Minesweeper : public arcade::IGame {
 
 const char EMPTY_SYMBOL = ' ';
 const uint8_t EMPTY_TILE = 0;
-const uint8_t DIFFICULTY_AVAILABLE = 2;
-const uint8_t DEFAULT_DIFFICULTY = 2;
 const uint8_t DEFAULT_POS = 0;
 const uint8_t FILL_SIZE = 100;
 const uint8_t OVER_OPACITY = 200;
 const uint8_t MAX_OPACITY = 255;
 const int8_t MINE = -1;
+const double UI_TEXT_PADDING = 1.3;
+const double UI_ITEM_PADDING = 2;
+const double UI_PADDING = 2.2;
+const int8_t UI_SPRITE_SIZE_MULTIPLIER = 2;
+const int8_t UI_FLAG_POS = 35;
+const int8_t UI_FLAG_NB_POS = 45;
+const color_t UI_BACKGROUND_COLOR = {2, 130, 0, 255};
+const color_t UI_FLAG_NB_COLOR = {255, 255, 255, 255};
 const std::string MENU_PATH = "./lib/arcade_menu.so";
 
+const uint8_t DIFFICULTY_AVAILABLE = 2;
+const uint8_t DEFAULT_DIFFICULTY = 1;
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
     {{9, 9}, 5, 10},
     {{16, 16}, 4, 40},
@@ -96,7 +105,7 @@ const color_t TILES_COLOR[2] {
     {0, 255, 53, 255}
 };
 
-const color_t BACKGROUND_COLOR = {2, 130, 0, 255};
+const color_t BACKGROUND_COLOR = {0, 0, 0, 255};
 
 /* ASSETS */
 
@@ -128,6 +137,9 @@ const std::map<int8_t, info_display_t> ITEMS_INFO_DISPLAY =
     {7, {"./lib/assets/arcade_minesweeper/tile_7.png", '7', {0xf2, 0x0c, 0x03, 255}}},
     {8, {"./lib/assets/arcade_minesweeper/tile_8.png", '8', {0xf2, 0x03, 0xd7, 255}}}
 };
+
+const std::string MINESWEEPER_FONT = "./lib/assets/arcade_minesweeper/arcade.ttf";
+const uint8_t MINESWEEPER_FONT_SIZE = 8;
 
 extern "C" arcade::IGame* makeGame();
 

@@ -90,7 +90,7 @@ void Minesweeper::insertARandomMine(size_t mines_placed, vector_2int_t pos)
 
 void Minesweeper::placeMines(vector_2int_t pos)
 {
-    for (size_t mines_placed = 0; mines_placed < game_params_.mines_nb; mines_placed++) {
+    for (int mines_placed = 0; mines_placed < game_params_.mines_nb; mines_placed++) {
         insertARandomMine(mines_placed, pos);
     }
 }
@@ -103,9 +103,47 @@ void Minesweeper::generateMap(void)
     }
 }
 
+void Minesweeper::createUi()
+{
+    entity_t ui_background = {};
+    entity_t ui_flag = {};
+    text_t flag_nb = {};
+
+    ui_background.character = EMPTY_SYMBOL;
+    ui_background.color = UI_BACKGROUND_COLOR;
+    ui_background.direction = UP;
+    ui_background.pos.x = GETBASEPOS(game_params_.map_size.second, game_params_.tile_size);
+    ui_background.pos.y = GETBASEPOS(game_params_.map_size.first, game_params_.tile_size) - UI_PADDING * game_params_.tile_size;
+    ui_background.size.x = game_params_.tile_size * game_params_.map_size.second;
+    ui_background.size.y = UI_PADDING * game_params_.tile_size;
+    ui_flag.asset = FLAG_INFO_DISPLAY.asset;
+    ui_flag.character = FLAG_INFO_DISPLAY.character;
+    ui_flag.color = FLAG_INFO_DISPLAY.color;
+    ui_flag.direction = UP;
+    ui_flag.pos.x = UI_FLAG_POS;
+    ui_flag.pos.y = GETBASEPOS(game_params_.map_size.first, game_params_.tile_size) - UI_ITEM_PADDING * game_params_.tile_size;
+    ui_flag.size = MAKE_VECTOR_T(game_params_.tile_size * UI_SPRITE_SIZE_MULTIPLIER);
+    flag_nb.color = UI_FLAG_NB_COLOR;
+    flag_nb.fontPath = MINESWEEPER_FONT;
+    flag_nb.fontSize = MINESWEEPER_FONT_SIZE * game_params_.tile_size;
+    flag_nb.pos.x = UI_FLAG_NB_POS;
+    flag_nb.pos.y = GETBASEPOS(game_params_.map_size.first, game_params_.tile_size) - UI_TEXT_PADDING * game_params_.tile_size;
+    flag_nb.value = std::to_string(game_params_.mines_nb);
+    data_.ui.push_back(ui_background);
+    data_.ui.push_back(ui_flag);
+    data_.texts.push_back(flag_nb);
+}
+
 void Minesweeper::updateMineDisplayer()
 {
-    
+    vector_t pos;
+
+    pos.x = UI_FLAG_NB_POS;
+    pos.y = GETBASEPOS(game_params_.map_size.first, game_params_.tile_size) - UI_TEXT_PADDING * game_params_.tile_size;
+    for (auto &it : data_.texts) {
+        if (pos.x == it.pos.x && pos.y == it.pos.y)
+            it.value = std::to_string(game_params_.mines_nb);
+    }
 }
 
 void Minesweeper::removeAnObjectByItsPos(int x, int y)
@@ -143,6 +181,7 @@ void Minesweeper::markFlag(vector_t mousePos)
         removeAnObjectByItsPos(mousePos.x, mousePos.y);
         map_[column][line].state = COVERED;
         game_params_.mines_nb++;
+        updateMineDisplayer();
         return;
     }
     game_params_.mines_nb--;
@@ -156,13 +195,14 @@ void Minesweeper::markFlag(vector_t mousePos)
         map_[column][line].state = FLAGED;
         data_.objects.push_back(flag);
     }
+    updateMineDisplayer();
 }
 
 Minesweeper::Minesweeper() : start_digging_(false)
 {
     game_params_ = DIFFICULTY_PARAMS[DEFAULT_DIFFICULTY];
     data_.bg = createBackground(game_params_);
-    
+    createUi();
     generateMap();
 }
 
