@@ -61,18 +61,18 @@ void GraphicSample::displayEntities(const std::vector<entity_t>& entities, short
 {
     for (const auto& entity : entities) {
         init_color(colorID,
-                   entity.color.r * 1000 / 255,
-                   entity.color.g * 1000 / 255,
-                   entity.color.b * 1000 / 255);
+                   entity.color.r * CONVERT_UINT,
+                   entity.color.g * CONVERT_UINT,
+                   entity.color.b * CONVERT_UINT);
 
-        if (entity.character == ' ') {
-            init_pair(pairID, colorID, colorID);
-        } else {
-            init_pair(pairID, colorID, COLOR_BLACK);
-        }
-        wattron(win, COLOR_PAIR(pairID));
-        mvwaddch(win, entity.pos.y, entity.pos.x, entity.character);
-        wattroff(win, COLOR_PAIR(pairID));
+        //if (entity.character == ' ') {
+        //    init_pair(pairID, colorID, colorID);
+        //} else {
+        //    init_pair(pairID, colorID, COLOR_BLACK);
+        //}
+        //wattron(win, COLOR_PAIR(pairID));
+        mvwaddch(win, entity.pos.y * LINES / 100, entity.pos.x * COLS / 100, entity.character);
+        //wattroff(win, COLOR_PAIR(pairID));
         colorID++;
         pairID++;
     }
@@ -82,9 +82,9 @@ void GraphicSample::displayTexts(const std::vector<text_t>& texts, short& pairID
 {
     for (const auto& text : texts) {
         init_color(colorID,
-                   text.color.r * 1000 / 255,
-                   text.color.g * 1000 / 255,
-                   text.color.b * 1000 / 255);
+                   text.color.r * CONVERT_UINT,
+                   text.color.g * CONVERT_UINT,
+                   text.color.b * CONVERT_UINT);
         init_pair(pairID, colorID, COLOR_BLACK);
         wattron(win, COLOR_PAIR(pairID));
         mvwprintw(win, text.pos.y, text.pos.x, "%s", text.value.c_str());

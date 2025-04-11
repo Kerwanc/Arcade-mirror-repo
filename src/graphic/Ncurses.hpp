@@ -15,6 +15,7 @@
     #include "IGraphic.hpp"
     constexpr int KEY_PRESSED_ENTER = 10;
     constexpr int KEY_PRESSED_ESC = 27;
+    constexpr int CONVERT_UINT = 1000 / 255;
 
 class GraphicSample : public arcade::IGraphic {
     public:
