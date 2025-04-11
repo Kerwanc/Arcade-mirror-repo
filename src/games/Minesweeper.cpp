@@ -42,39 +42,67 @@ static std::vector<entity_t> createBackground(conf_t game_params)
 
 void Minesweeper::increaseNeighboringTiles(uint8_t column, uint8_t line)
 {
-    for (uint8_t y = -1; y != 2; y++) {
-        for (uint8_t x = -1; x != 2; x++) {
+    for (int8_t y = -1; y != 2; y++) {
+        for (int8_t x = -1; x != 2; x++) {
             if (column + y >= 0 && column + y < game_params_.map_size.second
             && line + x >= 0 && line + x < game_params_.map_size.first)
-                if (map_[column + y][line + x].neighboring_cells != -1)
+                if (map_[column + y][line + x].neighboring_cells != MINE)
                     map_[column + y][line + x].neighboring_cells++;
         }
     }
 }
 
-void Minesweeper::insertARandomMine(size_t mines_placed)
+static bool is_surrounding(vector_2int_t tile, vector_2int_t pos)
+{
+    for (int8_t y = -1; y != 2; y++) {
+        for (int8_t x = -1; x != 2; x++) {
+            if (tile.x + x == pos.x && tile.y + y == pos.y)
+                return true;
+        }
+    }
+    return false;
+}
+
+void Minesweeper::insertARandomMine(size_t mines_placed, vector_2int_t pos)
 {
     size_t tiles_nb = game_params_.map_size.first * game_params_.map_size.second;
-    size_t pos = rand() % (tiles_nb - mines_placed);
-    uint8_t column = pos / game_params_.map_size.first;
-    uint8_t line = pos % game_params_.map_size.first;
+    size_t mine_pos = rand() % (tiles_nb - mines_placed - 9);
+    uint8_t column;
+    uint8_t line;
+    size_t index = 0;
 
-    map_[column][line].neighboring_cells = -1;
-    increaseNeighboringTiles(column, line);
+    for (column = 0; column < game_params_.map_size.second; column++) {
+        for (line = 0; line < game_params_.map_size.first; line++) {
+            if (map_[column][line].neighboring_cells == MINE)
+                continue;
+            if (is_surrounding({column, line}, pos) == true) {
+                continue;
+            }
+            if (index == mine_pos) {
+                map_[column][line].neighboring_cells = MINE;
+                increaseNeighboringTiles(column, line);
+                return;
+            }
+            index++;
+        }
+    }
+}
+
+void Minesweeper::placeMines(vector_2int_t pos)
+{
+    for (size_t mines_placed = 0; mines_placed < game_params_.mines_nb; mines_placed++) {
+        insertARandomMine(mines_placed, pos);
+    }
 }
 
 void Minesweeper::generateMap(void)
 {
-    for (uint8_t column = 0; column < game_params_.map_size.second; column++) {
-        map_.push_back({});
-        for (uint8_t line = 0; line < game_params_.map_size.first; line++) {
-            map_[column].push_back({COVERED, 0});
-        }
-    }
-    for (size_t mines_placed = 0; mines_placed < game_params_.mines_nb; mines_placed++) {
-        insertARandomMine(mines_placed);
+    map_.resize(game_params_.map_size.second);
+    for (auto &it : map_) {
+        it.resize(game_params_.map_size.first, {COVERED, EMPTY_TILE});
     }
 }
+
 
 void Minesweeper::removeAnObjectByItsPos(int x, int y)
 {
@@ -124,15 +152,11 @@ void Minesweeper::markFlag(vector_t mousePos)
     }
 }
 
-Minesweeper::Minesweeper()
+Minesweeper::Minesweeper() : start_digging_(false)
 {
     game_params_ = DIFFICULTY_PARAMS[DEFAULT_DIFFICULTY];
     data_.bg = createBackground(game_params_);
     generateMap();
-    for (size_t i = 0; i < game_params_.map_size.second; i++) {
-        for (size_t j = 0; j < game_params_.map_size.first; j++) {
-        }
-    }
 }
 
 Minesweeper::~Minesweeper() {}
@@ -159,6 +183,13 @@ void Minesweeper::dig(vector_2int_t pos)
 {
     entity_t tale = {};
 
+    if (start_digging_ == false) {
+        placeMines(pos);
+        start_digging_ = true;
+    }
+    if (map_[pos.x][pos.y].state != COVERED) {
+        return;
+    }
     tale.asset = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.asset;
     tale.character = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.character;
     tale.color = ITEMS_INFO_DISPLAY.find(map_[pos.x][pos.y].neighboring_cells)->second.color;
@@ -168,6 +199,18 @@ void Minesweeper::dig(vector_2int_t pos)
     tale.size = MAKE_VECTOR_T(game_params_.tile_size);
     data_.objects.push_back(tale);
     map_[pos.x][pos.y].state = DISCOVERED;
+    if (map_[pos.x][pos.y].neighboring_cells != EMPTY_TILE) {
+        return;
+    }
+    for (int8_t y = -1; y != 2; y++) {
+        for (int8_t x = -1; x != 2; x++) {
+            if (pos.x + x >= 0 && pos.x + x < game_params_.map_size.second
+            && pos.y + y >= 0 && pos.y + y < game_params_.map_size.first) {
+                dig({pos.x + x, pos.y + y});
+            }
+                
+        }
+    }
 }
 
 void Minesweeper::handleLeftClick(vector_t mousePos)

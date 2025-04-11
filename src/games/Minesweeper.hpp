@@ -48,7 +48,8 @@ class Minesweeper : public arcade::IGame {
         void handleEvent(event_t events) override;
         data_t update(void) override;
         void generateMap(void);
-        void insertARandomMine(size_t mines_placed);
+        void placeMines(vector_2int_t pos);
+        void insertARandomMine(size_t mines_placed, vector_2int_s pos);
         void increaseNeighboringTiles(uint8_t column, uint8_t line);
         void removeAnObjectByItsPos(int x, int y);
         void handleOver(vector_t mousePos);
@@ -59,6 +60,7 @@ class Minesweeper : public arcade::IGame {
         data_t data_;
         std::vector<std::vector<tile_t>> map_;
         conf_t game_params_;
+        bool start_digging_;
         const std::map<event_e, std::function<void(Minesweeper &, vector_t)>> EVENT_HANDLER =
         {
             {A_MOUSE_MOVE, &Minesweeper::handleOver},
@@ -68,10 +70,12 @@ class Minesweeper : public arcade::IGame {
 };
 
 const char EMPTY_SYMBOL = ' ';
+const uint8_t EMPTY_TILE = 0;
 const uint8_t DIFFICULTY_AVAILABLE = 2;
 const uint8_t DEFAULT_DIFFICULTY = 2;
 const uint8_t DEFAULT_POS = 0;
 const uint8_t FILL_SIZE = 100;
+const int8_t MINE = -1;
 
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
     {{9, 9}, 5, 10},
