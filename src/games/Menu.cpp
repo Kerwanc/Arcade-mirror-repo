@@ -13,7 +13,7 @@ Menu::Menu()
     void *sym;
     double Pos = 10;
 
-    menu.bg.push_back({{0,0}, {1920,1080}, 0, "./assets/Arcade_background.png", {0,0,0, 255}, UP});
+    menu.bg.push_back({{0,0}, {100,100}, 0, "./assets/Arcade_background.png", {0,0,0, 255}, UP});
     menu.texts.push_back({{45, Pos}, 20, "Arcade Menu:", ARCADE_FONT, {255, 255, 255, 255}});
     Pos = Pos + 3;
     menu.texts.push_back({{44, Pos}, 20, "Select Your Game !", ARCADE_FONT, {255, 255, 255, 255}});
