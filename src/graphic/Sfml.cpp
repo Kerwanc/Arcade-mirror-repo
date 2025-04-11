@@ -68,7 +68,7 @@ void SFML::createEntities(std::vector<entity_t> entities)
             window_.draw(sprite);
         } else {
             sf::RectangleShape rectangle;
-            rectangle.setSize({(float)entity.size.x* INTO_PERCENT(window_.getSize().x), (float)entity.size.y* INTO_PERCENT(window_.getSize().y)});
+            rectangle.setSize({(float)entity.size.x * INTO_PERCENT(window_.getSize().x), (float)entity.size.y* INTO_PERCENT(window_.getSize().y)});
             rectangle.setFillColor(sf::Color{entity.color.r, entity.color.g, entity.color.b, entity.color.a});
             rectangle.setPosition(entity.pos.x * INTO_PERCENT(window_.getSize().x), entity.pos.y * INTO_PERCENT(window_.getSize().y));
             window_.draw(rectangle);

@@ -172,10 +172,10 @@ void Minesweeper::handleOver(vector_t mousePos)
     for (auto &tale : data_.bg) {
         if (mousePos.x > tale.pos.x && mousePos.x < tale.pos.x + game_params_.tile_size
         && mousePos.y > tale.pos.y && mousePos.y < tale.pos.y + game_params_.tile_size) {
-            tale.color.a = 200;
+            tale.color.a = OVER_OPACITY;
         }
         else
-            tale.color.a = 255;
+            tale.color.a = MAX_OPACITY;
     }
 }
 

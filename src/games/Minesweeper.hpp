@@ -75,6 +75,8 @@ const uint8_t DIFFICULTY_AVAILABLE = 2;
 const uint8_t DEFAULT_DIFFICULTY = 2;
 const uint8_t DEFAULT_POS = 0;
 const uint8_t FILL_SIZE = 100;
+const uint8_t OVER_OPACITY = 200;
+const uint8_t MAX_OPACITY = 255;
 const int8_t MINE = -1;
 
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
