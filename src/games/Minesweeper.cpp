@@ -103,6 +103,10 @@ void Minesweeper::generateMap(void)
     }
 }
 
+void Minesweeper::updateMineDisplayer()
+{
+    
+}
 
 void Minesweeper::removeAnObjectByItsPos(int x, int y)
 {
@@ -138,8 +142,10 @@ void Minesweeper::markFlag(vector_t mousePos)
     if (map_[column][line].state == FLAGED) {
         removeAnObjectByItsPos(mousePos.x, mousePos.y);
         map_[column][line].state = COVERED;
+        game_params_.mines_nb++;
         return;
     }
+    game_params_.mines_nb--;
     flag.asset = FLAG_INFO_DISPLAY.asset;
     flag.character = FLAG_INFO_DISPLAY.character;
     flag.color = FLAG_INFO_DISPLAY.color;
@@ -156,11 +162,11 @@ Minesweeper::Minesweeper() : start_digging_(false)
 {
     game_params_ = DIFFICULTY_PARAMS[DEFAULT_DIFFICULTY];
     data_.bg = createBackground(game_params_);
+    
     generateMap();
 }
 
 Minesweeper::~Minesweeper() {}
-
 
 data_t Minesweeper::update(void)
 {
@@ -227,6 +233,11 @@ void Minesweeper::handleLeftClick(vector_t mousePos)
     if (map_[column][line].state == COVERED) {
         dig({column, line});
     }
+}
+
+void Minesweeper::switchToMenu(vector_t)
+{
+    data_.libs.game = MENU_PATH;
 }
 
 void Minesweeper::handleEvent(event_t CurrentEvent)

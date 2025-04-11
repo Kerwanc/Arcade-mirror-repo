@@ -55,7 +55,9 @@ class Minesweeper : public arcade::IGame {
         void handleOver(vector_t mousePos);
         void markFlag(vector_t mousePos);
         void handleLeftClick(vector_t mousePos);
+        void switchToMenu(vector_t mousePos);
         void dig(vector_2int_t pos);
+        void updateMineDisplayer();
     private:
         data_t data_;
         std::vector<std::vector<tile_t>> map_;
@@ -65,7 +67,8 @@ class Minesweeper : public arcade::IGame {
         {
             {A_MOUSE_MOVE, &Minesweeper::handleOver},
             {A_MOUSE_LEFT, &Minesweeper::handleLeftClick},
-            {A_MOUSE_RIGHT, &Minesweeper::markFlag}
+            {A_MOUSE_RIGHT, &Minesweeper::markFlag},
+            {A_KEY_ESC, &Minesweeper::switchToMenu}
         };
 };
 
@@ -78,6 +81,7 @@ const uint8_t FILL_SIZE = 100;
 const uint8_t OVER_OPACITY = 200;
 const uint8_t MAX_OPACITY = 255;
 const int8_t MINE = -1;
+const std::string MENU_PATH = "./lib/arcade_menu.so";
 
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
     {{9, 9}, 5, 10},
