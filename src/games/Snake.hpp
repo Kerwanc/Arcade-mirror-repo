@@ -57,12 +57,12 @@ class Snake : public arcade::IGame {
 const std::map<char, std::string> TILES_ASSETS = {
     {'#', " "},
     {' ', " "},
-    {'<', " "},
-    {'>', " "},
-    {'^', " "},
-    {'+', " "},
-    {'X', " "},
-    {'O', " "}
+    {'<', "lib/assets/arcade_snake/head_left.png"},
+    {'>', "lib/assets/arcade_snake/head_right.png"},
+    {'^', "lib/assets/arcade_snake/head_up.png"},
+    {'+', "lib/assets/arcade_snake/head_down.png"},
+    {'X', "lib/assets/arcade_snake/body_full.png"},
+    {'O', "lib/assets/arcade_snake/apple.png"}
 };
 
 
