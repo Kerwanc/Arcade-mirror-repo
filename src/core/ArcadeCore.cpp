@@ -101,13 +101,28 @@ void arcade::ArcadeCore::run()
     }
 }
 
+void arcade::ArcadeCore::switchGameLib()
+{
+    game_.reset();
+    gameIndex = gameIndex + 1;
+    if (gameIndex > (int)allgames_.size() - 1)
+        gameIndex = 0;   
+}
+
 bool arcade::ArcadeCore::handleInstructions(const event_t& instructions, const data_t& prevData, const data_t& data)
 {
     for (const auto& event : instructions.events) {
-        if (event == A_KEY_ESC)
+        if (event == A_KEY_F4)
             return true;
+        if (event == A_KEY_ESC) {
+            load(MENU_PATH, GAME_LIB);
+            run();
+            return true;
+        }
         if (event == A_KEY_A)
             switchGraphicLib();
+        if (event == A_KEY_B)
+            switchGameLib();
         if (prevData.libs.game != data.libs.game ||
             prevData.libs.graphic != data.libs.graphic) {
             menuReloading(data);

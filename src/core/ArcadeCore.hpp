@@ -29,6 +29,7 @@ namespace arcade {
         private:
             bool handleInstructions(const event_t& instructions, const data_t& prevData, const data_t& data);
             void switchGraphicLib();
+            void switchGameLib();
             void menuReloading(const data_t& data);
             bool reloadLibs(void);
             std::vector<std::string> allgames_;

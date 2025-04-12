@@ -38,7 +38,9 @@ const std::map<event_e, int> KEYBOARD_EVENT_LINK =
     {A_KEY_LEFT, KEY_LEFT},
     {A_KEY_RIGHT, KEY_RIGHT},
     {A_KEY_DOWN, KEY_DOWN   },
-    {A_KEY_ENTER, KEY_PRESSED_ENTER}
+    {A_KEY_ENTER, KEY_PRESSED_ENTER},
+    {A_KEY_F4, KEY_F(4)},
+    {A_KEY_B, 'b'}
 };
 
 extern "C" arcade::IGraphic* makeGraphic();

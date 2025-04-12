@@ -28,10 +28,11 @@ class Menu : public arcade::IGame {
 
     private:
         void setupBackground();
-        void setupTitle(double& pos);
-        void loadGames(double& pos);
-        void setupGraphicTitle(double& pos);
-        void loadGraphics(double& pos);
+        void setupTitle(double &Pos);
+        void loadGames(double &Pos);
+        void setupGraphicTitle(double &Pos);
+        void loadGraphics(double &Pos);
+        void setupCommands(double &Pos);
 
         data_t menu;
         size_t selectedIndex;

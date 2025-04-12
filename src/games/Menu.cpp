@@ -7,6 +7,38 @@
 
 #include "Menu.hpp"
 
+
+Menu::Menu()
+{
+    double Pos = 35;
+
+    setupBackground();
+    setupTitle(Pos);
+    loadGames(Pos);
+    nbGames = menu.texts.size() - 1;
+
+    setupGraphicTitle(Pos);
+    loadGraphics(Pos);
+    nbGraphics = menu.texts.size() - 1;
+
+    setupCommands(Pos);
+    selectedIndex = 2;
+}
+
+void Menu::setupCommands(double &Pos)
+{
+    Pos += 5;
+    menu.texts.push_back({{44, Pos}, 12, "ALL COMMANDS :", ARCADE_FONT, {255, 255, 255, 255}});
+    Pos += 5;
+    menu.texts.push_back({{44, Pos}, 10, "ESC = reload menu.", ARCADE_FONT, {255, 255, 255, 255}});
+    Pos += 3;
+    menu.texts.push_back({{44, Pos}, 10, "F4 = Quit.", ARCADE_FONT, {255, 255, 255, 255}});
+    Pos += 3;
+    menu.texts.push_back({{44, Pos}, 10, "A = change graphic lib.", ARCADE_FONT, {255, 255, 255, 255}});
+    Pos += 3;
+    menu.texts.push_back({{44, Pos}, 10, "B = change current game.", ARCADE_FONT, {255, 255, 255, 255}});
+}
+
 void Menu::setupBackground()
 {
     menu.bg.push_back({{0, 0}, {100, 100}, 0, BG_ASSET, {0, 0, 0, 255}, UP});
@@ -33,7 +65,7 @@ void Menu::loadGames(double& Pos)
         if (!sym)
             continue;
         Pos += 3;
-        menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
+        menu.texts.push_back({{46, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
     }
 }
 
@@ -57,26 +89,9 @@ void Menu::loadGraphics(double& Pos)
         if (!sym)
             continue;
         Pos += 3;
-        menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
+        menu.texts.push_back({{46, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
     }
 }
-
-Menu::Menu()
-{
-    double Pos = 40;
-
-    setupBackground();
-    setupTitle(Pos);
-    loadGames(Pos);
-    nbGames = menu.texts.size() - 1;
-
-    setupGraphicTitle(Pos);
-    loadGraphics(Pos);
-    nbGraphics = menu.texts.size() - 1;
-
-    selectedIndex = 2;
-}
-
 Menu::~Menu()
 {
 }

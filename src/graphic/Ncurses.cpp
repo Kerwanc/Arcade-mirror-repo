@@ -47,13 +47,13 @@ event_t GraphicSample::getEvent()
         getmouse(&mouse);
         if (mouse.bstate & BUTTON1_PRESSED) {
             event.events.push_back(A_MOUSE_LEFT);
-            event.mPos.x = (double)mouse.x;
-            event.mPos.y = (double)mouse.y;
+            event.mPos.x = (double)mouse.x * 100.0 / COLS;
+            event.mPos.y = (double)mouse.y * 100.0 / LINES;
         }
         if (mouse.bstate & BUTTON3_PRESSED) {
             event.events.push_back(A_MOUSE_RIGHT);
-            event.mPos.x = (double)mouse.x;
-            event.mPos.y = (double)mouse.y;
+            event.mPos.x = (double)mouse.x * 100.0 / COLS;
+            event.mPos.y = (double)mouse.y * 100.0 / LINES;
         }
     }
     return event;
