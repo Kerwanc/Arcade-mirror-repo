@@ -78,7 +78,7 @@ class Minesweeper : public arcade::IGame {
         };
 };
 
-const char EMPTY_SYMBOL = ' ';
+const char EMPTY_SYMBOL = '/';
 const uint8_t EMPTY_TILE = 0;
 const uint8_t DEFAULT_POS = 0;
 const uint8_t FILL_SIZE = 100;
@@ -98,7 +98,7 @@ const std::string MENU_PATH = "./lib/arcade_menu.so";
 const uint8_t DIFFICULTY_AVAILABLE = 2;
 const uint8_t DEFAULT_DIFFICULTY = 0;
 const conf_t DIFFICULTY_PARAMS[DIFFICULTY_AVAILABLE + 1] {
-    {{9, 9}, 5, 10},
+    {{9, 9}, 6, 10},
     {{16, 16}, 4, 40},
     {{16, 30}, 3, 99}
 };
