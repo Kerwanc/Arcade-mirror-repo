@@ -7,7 +7,7 @@ pierre.pruvost@epitech.eu
 Notre projet reproduit le fonctionnement d’une borne d’arcade. Pour la faire fonctionner, nous fournissons un Core, qui est l’équivalent de la borne en elle-même. Elle doit être accompagnée d’une ou plus bibliothèque graphique afin d’être capable d’afficher vos jeux et votre menu. Une fois fait, il vous faudra ajouter les jeux que vous souhaitez vous y jouer
 
 `Tree`
-```
+```bash
 .
 ├── assets/                 # Ressources de base pour le menu ou les libs
 ├── doc/                    # Diagrammes UML et documentations
@@ -34,7 +34,7 @@ Le Core permet la communication entre les deux autres parties :
 
 - une [partie jeu] qui gère les règles
 
-```
+```cpp
 class ICore {
     public:
 		    virtual ~ICore() = default;
@@ -49,7 +49,7 @@ Il permet de lancer un jeu en utilisant une bibliothèque graphique définie. Il
 `IGame`
 La partie jeu du projet est dédiée à créer les jeux en eux-mêmes, dans leur ensemble. Il contient donc les informations pour chaque élément du jeu, sa position, sa direction, ça taille, ou quelle image il faut utiliser. A partir de ces informations, il peut également calculer les règles du jeu, sa physique, ou sa réaction à certains éléments de jeu.
 
-```
+```cpp
 class IGame {
 
         public:
@@ -66,7 +66,7 @@ class IGame {
 La partie graphique du projet est principalement dédiée à l’affichage d’éléments visuels.
 Elle permet aussi de prendre en compte les entrées utilisateurs, afin de savoir quelle touche a été appuyée ou relachée.
 
-```
+```cpp
     class IGraphic {
 
         public:
