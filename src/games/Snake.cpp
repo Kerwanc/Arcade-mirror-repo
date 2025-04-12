@@ -138,13 +138,13 @@ void Snake::handleEvent(event_t latestEvent)
     data_.objects.push_back(apple_);
 }
 
-static entity_t createBgElement(vector_t size, vector_t pos, char type)
+static entity_t createBgElement(vector_t size, vector_t pos, char type, color_e color)
 {
     entity_t element;
 
     element.asset = TILES_ASSETS.at(type);
     element.pos = pos;
-    element.color = TILES_COLOR[WHITE];
+    element.color = TILES_COLOR[color];
     element.direction = UP;
     element.character = type;
     element.size = size;
@@ -154,6 +154,7 @@ static entity_t createBgElement(vector_t size, vector_t pos, char type)
 void Snake::generateMap(void)
 {
     char type = ' ';
+    color_e color = BLACK;
     size_t trueX = 0;
     size_t trueY = 0;
 
@@ -164,11 +165,14 @@ void Snake::generateMap(void)
             trueY = y + CENTERING.y;
             if (isAtBorder(x, y)) {
                 type = '#';
+                color = WHITE;
             } else {
                 type = ' ';
+                color = BLACK;
             }
             map_[y].push_back({{trueX, trueY}, type});
-            data_.bg.push_back(createBgElement(NEUTRAL_SIZE, {(double)trueX, (double)trueY,}, type));
+            data_.bg.push_back(createBgElement(NEUTRAL_SIZE,
+                {(double)trueX, (double)trueY,}, type, color));
         }
     }
 }
