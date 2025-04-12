@@ -52,7 +52,6 @@ static vector_t setApplePos(void)
         ((CENTERING.x + 1) + (rand() % (MAP_SIZE - 1))),
         ((CENTERING.y + 1) + (rand() % (MAP_SIZE - 1)))
     };
-    dprintf(2, "a x %f y %f\n", applePos.x, applePos.y);
     return applePos;
 }
 
@@ -107,7 +106,6 @@ void Snake::moveSnake(event_e directionKey)
     }
     if (SNAKE_CONTACT(snake_.front().pos, apple_.pos)) {
         snake_.push_back(createSnakePart('X', GREEN, newPose, NEUTRAL_SIZE));
-        dprintf(2, "b x %f y %f\n", apple_.pos.x, apple_.pos.y);
         apple_.pos = setApplePos();
     } else {
         map_[newPose.y - CENTERING.y]
