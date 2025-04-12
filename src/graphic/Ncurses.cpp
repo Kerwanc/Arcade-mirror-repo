@@ -5,6 +5,8 @@
 ** GraphicSample
 */
 
+#include <chrono>
+#include <thread>
 #include "Ncurses.hpp"
 
 GraphicSample::GraphicSample()
@@ -71,7 +73,7 @@ void GraphicSample::displayEntities(const std::vector<entity_t>& entities, short
         //    init_pair(pairID, colorID, COLOR_BLACK);
         //}
         //wattron(win, COLOR_PAIR(pairID));
-        mvwaddch(win, entity.pos.y * LINES / 100, entity.pos.x * COLS / 100, entity.character);
+        mvwprintw(win, entity.pos.y * LINES / 100, entity.pos.x * COLS / 100, "%c", entity.character);
         //wattroff(win, COLOR_PAIR(pairID));
         colorID++;
         pairID++;
@@ -87,7 +89,7 @@ void GraphicSample::displayTexts(const std::vector<text_t>& texts, short& pairID
                    text.color.b * CONVERT_UINT);
         init_pair(pairID, colorID, COLOR_BLACK);
         wattron(win, COLOR_PAIR(pairID));
-        mvwprintw(win, text.pos.y, text.pos.x, "%s", text.value.c_str());
+        mvwprintw(win, text.pos.y * LINES / 100, text.pos.x * COLS / 100, "%s", text.value.c_str());
         wattroff(win, COLOR_PAIR(pairID));
         colorID++;
         pairID++;
@@ -99,14 +101,13 @@ void GraphicSample::display(data_t data)
     short pairID = 10;
     short colorID = 11;
 
-    wclear(win);
+    werase(win);
     displayEntities(data.bg, pairID, colorID);
     displayEntities(data.objects, pairID, colorID);
     displayEntities(data.ui, pairID, colorID);
     displayTexts(data.texts, pairID, colorID);
     wrefresh(win);
 }
-
 
 extern "C" arcade::IGraphic* makeGraphic()
 {

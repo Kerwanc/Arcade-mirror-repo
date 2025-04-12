@@ -14,16 +14,25 @@
     #include <algorithm>
     #include <dlfcn.h>
     #include "IGame.hpp"
+
     const std::string ARCADE_FONT = "./assets/arcade.ttf";
+    const std::string BG_ASSET = "./assets/Arcade_background.png";
 
 class Menu : public arcade::IGame {
     public:
         Menu();
         ~Menu();
+
         void handleEvent(event_t events) override;
         data_t update(void) override;
-    
+
     private:
+        void setupBackground();
+        void setupTitle(double& pos);
+        void loadGames(double& pos);
+        void setupGraphicTitle(double& pos);
+        void loadGraphics(double& pos);
+
         data_t menu;
         size_t selectedIndex;
         libPaths_t newlibs;

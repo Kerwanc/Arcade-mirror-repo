@@ -7,46 +7,73 @@
 
 #include "Menu.hpp"
 
-Menu::Menu()
+void Menu::setupBackground()
 {
-    void *handle;
-    void *sym;
-    double Pos = 10;
+    menu.bg.push_back({{0, 0}, {100, 100}, 0, BG_ASSET, {0, 0, 0, 255}, UP});
+}
 
-    menu.bg.push_back({{0,0}, {100,100}, 0, "./assets/Arcade_background.png", {0,0,0, 255}, UP});
+void Menu::setupTitle(double& Pos)
+{
     menu.texts.push_back({{45, Pos}, 20, "Arcade Menu:", ARCADE_FONT, {255, 255, 255, 255}});
-    Pos = Pos + 3;
+    Pos += 5;
     menu.texts.push_back({{44, Pos}, 20, "Select Your Game !", ARCADE_FONT, {255, 255, 255, 255}});
-    for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
+}
+
+void Menu::loadGames(double& Pos)
+{
+    void *sym;
+    void *handle;
+
+    for (const auto& entry : std::filesystem::directory_iterator("./lib")) {
         handle = dlopen(entry.path().c_str(), RTLD_LAZY);
         if (!handle)
             continue;
         sym = dlsym(handle, "makeGame");
+        dlclose(handle);
         if (!sym)
             continue;
-        dlclose(handle);
-        if (entry.is_regular_file() && entry.path().filename().string().find('.')) {
-            Pos = Pos + 3;
-            menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
-        }
+        Pos += 3;
+        menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
     }
-    nbGames = menu.texts.size() - 1;
-    Pos = Pos + 3;
+}
+
+void Menu::setupGraphicTitle(double& Pos)
+{
+    Pos += 5;
     menu.texts.push_back({{44, Pos}, 20, "Select Your Graphic !", ARCADE_FONT, {255, 255, 255, 255}});
-    for (const auto &entry : std::filesystem::directory_iterator("./lib")) {
+}
+
+void Menu::loadGraphics(double& Pos)
+{
+    void *sym;
+    void *handle;
+
+    for (const auto& entry : std::filesystem::directory_iterator("./lib")) {
         handle = dlopen(entry.path().c_str(), RTLD_LAZY);
         if (!handle)
             continue;
         sym = dlsym(handle, "makeGraphic");
+        dlclose(handle);
         if (!sym)
             continue;
-        dlclose(handle);
-        if (entry.is_regular_file() && entry.path().filename().string().find('.')) {
-            Pos += 3;
-            menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
-        }
+        Pos += 3;
+        menu.texts.push_back({{44.5, Pos}, 12, entry.path().filename().string(), ARCADE_FONT, {200, 200, 200, 255}});
     }
+}
+
+Menu::Menu()
+{
+    double Pos = 40;
+
+    setupBackground();
+    setupTitle(Pos);
+    loadGames(Pos);
+    nbGames = menu.texts.size() - 1;
+
+    setupGraphicTitle(Pos);
+    loadGraphics(Pos);
     nbGraphics = menu.texts.size() - 1;
+
     selectedIndex = 2;
 }
 
