@@ -14,7 +14,7 @@
 bool isAtBorder(size_t x, size_t y)
 {
     if (x == 0 || y == 0 ||
-        x == MAP_SIZE - 1 || y == MAP_SIZE - 1)
+        x == MAP_SIZE || y == MAP_SIZE)
             return true;
     return false;
 }
@@ -49,9 +49,10 @@ static std::vector<entity_t> setSnake(void)
 static vector_t setApplePos(void)
 {
     vector_t applePos = {
-        (CENTERING.x + 1) + (rand() % MAP_SIZE),
-        (CENTERING.y + 1) + (rand() % MAP_SIZE)
+        ((CENTERING.x + 1) + (rand() % (MAP_SIZE - 1))),
+        ((CENTERING.y + 1) + (rand() % (MAP_SIZE - 1)))
     };
+    dprintf(2, "a x %f y %f\n", applePos.x, applePos.y);
     return applePos;
 }
 
@@ -106,6 +107,7 @@ void Snake::moveSnake(event_e directionKey)
     }
     if (SNAKE_CONTACT(snake_.front().pos, apple_.pos)) {
         snake_.push_back(createSnakePart('X', GREEN, newPose, NEUTRAL_SIZE));
+        dprintf(2, "b x %f y %f\n", apple_.pos.x, apple_.pos.y);
         apple_.pos = setApplePos();
     } else {
         map_[newPose.y - CENTERING.y]
@@ -157,9 +159,9 @@ void Snake::generateMap(void)
     size_t trueX = 0;
     size_t trueY = 0;
 
-    for (size_t y = 0 ; y < MAP_SIZE; y++) {
+    for (size_t y = 0 ; y <= MAP_SIZE; y++) {
         map_.push_back({});
-        for (size_t x = 0 ; x < MAP_SIZE; x++) {
+        for (size_t x = 0 ; x <= MAP_SIZE; x++) {
             trueX = x + CENTERING.x;
             trueY = y + CENTERING.y;
             if (isAtBorder(x, y)) {
