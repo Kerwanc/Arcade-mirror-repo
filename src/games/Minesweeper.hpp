@@ -31,6 +31,12 @@ enum tile_state_e {
     FLAGED
 };
 
+enum threestate_e {
+    UNDEFINED,
+    FALSE,
+    TRUE
+};
+
 typedef struct tile_s {
     tile_state_e state;
     int8_t neighboring_cells;
@@ -59,22 +65,27 @@ class Minesweeper : public arcade::IGame {
         void dig(vector_2int_t pos);
         void createUi();
         void updateMineDisplayer();
+        void updateScoreDisplayer();
         void lose();
         void reveal_cell(vector_2int_t pos);
+        void restart(vector_t mousePos);
         void changeDifficulty(vector_t mousePos);
+        void endDisplayer(std::string message, color_t message_color);
     private:
         data_t data_;
         std::vector<std::vector<tile_t>> map_;
         conf_t game_params_;
-        bool start_digging_;
+        threestate_e start_digging_;
         uint8_t difficulty_;
+        size_t score_;
         const std::map<event_e, std::function<void(Minesweeper &, vector_t)>> EVENT_HANDLER =
         {
             {A_MOUSE_MOVE, &Minesweeper::handleOver},
             {A_MOUSE_LEFT, &Minesweeper::handleLeftClick},
             {A_MOUSE_RIGHT, &Minesweeper::markFlag},
             {A_KEY_ESC, &Minesweeper::switchToMenu},
-            {A_KEY_ENTER, &Minesweeper::changeDifficulty}
+            {A_KEY_ENTER, &Minesweeper::changeDifficulty},
+            {A_KEY_SPACE, &Minesweeper::restart}
         };
 };
 
@@ -84,15 +95,24 @@ const uint8_t DEFAULT_POS = 0;
 const uint8_t FILL_SIZE = 100;
 const uint8_t OVER_OPACITY = 200;
 const uint8_t MAX_OPACITY = 255;
+const uint8_t SCORE_INCREMENTER = 10;
 const int8_t MINE = -1;
 const double UI_TEXT_PADDING = 1.3;
 const double UI_ITEM_PADDING = 2;
 const double UI_PADDING = 2.2;
 const int8_t UI_SPRITE_SIZE_MULTIPLIER = 2;
-const int8_t UI_FLAG_POS = 35;
-const int8_t UI_FLAG_NB_POS = 45;
+const int8_t UI_FLAG_POS = 20;
+const int8_t UI_FLAG_NB_POS = 32;
+const int8_t UI_SCORE_POS = 42;
+const int8_t UI_END_POS = 25;
+const std::string SCORE_TEXT_VALUE = "SCORE ";
+const std::string LOSE_TEXT_VALUE = "YOU LOSE ! (SKILL ISSUE)";
+const std::string WIN_TEXT_VALUE = "YOU WIN ! (VICTORY)";
 const color_t UI_BACKGROUND_COLOR = {2, 130, 0, 255};
 const color_t UI_FLAG_NB_COLOR = {255, 255, 255, 255};
+const color_t UI_SCORE_COLOR = {255, 255, 255, 255};
+const color_t UI_WIN_COLOR = {0, 255, 150, 255};
+const color_t UI_LOSE_COLOR = {255, 0, 0, 255};
 const std::string MENU_PATH = "./lib/arcade_menu.so";
 
 const uint8_t DIFFICULTY_AVAILABLE = 2;
@@ -144,7 +164,7 @@ const std::map<int8_t, info_display_t> ITEMS_INFO_DISPLAY =
 };
 
 const std::string MINESWEEPER_FONT = "./lib/assets/arcade_minesweeper/arcade.ttf";
-const uint8_t MINESWEEPER_FONT_SIZE = 8;
+const uint8_t MINESWEEPER_FONT_SIZE = 5;
 
 extern "C" arcade::IGame* makeGame();
 
