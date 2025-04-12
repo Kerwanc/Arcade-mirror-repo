@@ -12,8 +12,11 @@ Sdl::Sdl()
 {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
-    window = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 1000, SDL_WINDOW_SHOWN);
+    IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
+    window = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        WINDOW_SIZE, WINDOW_SIZE, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
+    SET_COLOR(renderer, COLORS[BLACK]);
 }
 
 Sdl::~Sdl()
@@ -21,8 +24,25 @@ Sdl::~Sdl()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
 }
+
+/*
+    SDL
+
+        SDL_RECT type
+        IMG_LOAD
+            SDL_CREATETEXTUREFROMSURFACE
+            SDL_RENDERCOPY
+            SDL_FREESURFACE
+            SDL__DESTROYTEXTURE
+
+        POUR COULEUR
+            SDL_SETRENDERDRAWCOLOR
+            SDL_FILLRECT
+            DEU
+*/
 
 event_t Sdl::getEvent()
 {
@@ -30,39 +50,22 @@ event_t Sdl::getEvent()
     SDL_Event sdlEvent;
 
     while (SDL_PollEvent(&sdlEvent)) {
-        if (sdlEvent.type == SDL_KEYDOWN) {
-            switch (sdlEvent.key.keysym.sym) {
-                case SDLK_ESCAPE:
-                    event.events.push_back(A_KEY_ESC);
-                    break;
-                case SDLK_a:
-                    event.events.push_back(A_KEY_A);
-                    break;
-                case SDLK_b:
-                    event.events.push_back(A_KEY_B);
-                    break;
-                case SDLK_UP:
-                    event.events.push_back(A_KEY_UP);
-                    break;
-                case SDLK_DOWN:
-                    event.events.push_back(A_KEY_DOWN);
-                    break;
-                case SDLK_LEFT:
-                    event.events.push_back(A_KEY_LEFT);
-                    break;
-                case SDLK_RIGHT:
-                    event.events.push_back(A_KEY_RIGHT);
-                    break;
-                case SDLK_RETURN:
-                    event.events.push_back(A_KEY_ENTER);
-                    break;
-                default:
-                    break;
-            }
+        if (sdlEvent.type == SDL_KEYDOWN &&
+            EVENT_TYPES.contains(sdlEvent.key.keysym.sym)){
+            event.events.push_back(EVENT_TYPES.at(sdlEvent.key.keysym.sym));
+        }
+        if (sdlEvent.type == SDL_MOUSEMOTION) {
+            event.events.push_back(A_MOUSE_MOVE);
+            event.mPos = {COORD_TO_PERCENT(sdlEvent.button.x), COORD_TO_PERCENT(sdlEvent.button.y)};
+        }
+        if (sdlEvent.type == SDL_MOUSEBUTTONDOWN) {
+            event.events.push_back(MOUSE_EVENT_LINK.at(sdlEvent.button.button));
+            event.mPos = {COORD_TO_PERCENT(sdlEvent.button.x), COORD_TO_PERCENT(sdlEvent.button.y)};
         }
     }
     return event;
 }
+
 
 void Sdl::displayText(text_t text)
 {
@@ -83,8 +86,8 @@ void Sdl::displayText(text_t text)
     }
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     posText = {
-        static_cast<int>(text.pos.x * 1000 / 100),
-        static_cast<int>(text.pos.y * 1000 / 100),
+        PERCENT_TO_COORD(text.pos.x),
+        PERCENT_TO_COORD(text.pos.y),
         surface->w,
         surface->h
     };
@@ -94,23 +97,32 @@ void Sdl::displayText(text_t text)
     TTF_CloseFont(font);
 }
 
+void Sdl::displaySprites(entity_t entity)
+{
+    SDL_Texture *texture = IMG_LoadTexture(renderer, entity.asset.c_str());
+    SDL_Rect rect = CREATE_RECT(entity);
+    if (texture) {
+        SDL_RenderCopy(renderer, texture, nullptr, &rect);
+    } else {
+        SET_COLOR(renderer, entity.color);
+        SDL_RenderFillRects(renderer, &rect, 1);
+    }
+    SDL_DestroyTexture(texture);
+}
+
 void Sdl::display(data_t data)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SET_COLOR(renderer, COLORS[BLACK]);
     SDL_RenderClear(renderer);
 
     for (const auto &entity : data.bg) {
-        SDL_Texture *texture = IMG_LoadTexture(renderer, entity.asset.c_str());
-        if (texture) {
-            SDL_Rect rect = {(int)entity.pos.x, (int)entity.pos.y, (int)entity.size.x, (int)entity.size.y};
-            SDL_RenderCopy(renderer, texture, nullptr, &rect);
-        }
-        SDL_DestroyTexture(texture);
+        displaySprites(entity);
     }
     for (const auto &entity : data.objects) {
+        displaySprites(entity);
     }
-
     for (const auto &entity : data.ui) {
+        displaySprites(entity);
     }
     for (const auto &text : data.texts) {
         displayText(text);
