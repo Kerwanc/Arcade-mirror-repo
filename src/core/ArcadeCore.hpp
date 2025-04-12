@@ -26,6 +26,7 @@ namespace arcade {
             ~ArcadeCore();
             void run();
             void load(std::string libPath, typeLib_e type);
+
         private:
             bool handleInstructions(const event_t& instructions, const data_t& prevData, const data_t& data);
             void switchGraphicLib();
