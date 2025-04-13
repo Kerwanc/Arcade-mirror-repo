@@ -69,6 +69,7 @@ const std::map<event_e, sf::Keyboard::Key> KEYBOARD_EVENT_LINK =
     {A_KEY_V, sf::Keyboard::V},
     {A_KEY_W, sf::Keyboard::W},
     {A_KEY_Y, sf::Keyboard::Y},
+    {A_KEY_Z, sf::Keyboard::Z},
     {A_KEY_0, sf::Keyboard::Num0},
     {A_KEY_1, sf::Keyboard::Num1},
     {A_KEY_2, sf::Keyboard::Num2},
@@ -91,6 +92,20 @@ const std::map<event_e, sf::Keyboard::Key> KEYBOARD_EVENT_LINK =
     {A_KEY_F10, sf::Keyboard::F10},
     {A_KEY_F11, sf::Keyboard::F11},
     {A_KEY_F12, sf::Keyboard::F12}
+};
+
+typedef struct rotation_s {
+
+    size_t angle;
+    std::pair<bool, bool> origin;
+}   rotation_t;
+
+const rotation_t ROTATION[4]
+{
+    {0, {0, 0}},
+    {180, {1, 1}},
+    {270, {1, 0}},
+    {90, {0, 1}}
 };
 
 const std::map<event_e, sf::Mouse::Button> MOUSE_EVENT_LINK =

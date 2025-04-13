@@ -65,6 +65,9 @@ void SFML::createEntities(std::vector<entity_t> entities)
             sprite.scale(scaler.x, scaler.y);
             sprite.setTexture(texture);
             sprite.setPosition(entity.pos.x * INTO_PERCENT(window_.getSize().x), entity.pos.y * INTO_PERCENT(window_.getSize().y));
+            sprite.rotate(ROTATION[entity.direction].angle);
+            sprite.setOrigin(texture_size.x * ROTATION[entity.direction].origin.first,
+                texture_size.y * ROTATION[entity.direction].origin.second);
             window_.draw(sprite);
         } else {
             sf::RectangleShape rectangle;
