@@ -57,10 +57,10 @@ class Snake : public arcade::IGame {
 const std::map<char, std::string> TILES_ASSETS = {
     {'#', " "},
     {' ', " "},
-    {'<', "lib/assets/arcade_snake/head_left.png"},
-    {'>', "lib/assets/arcade_snake/head_right.png"},
+    {'<', "lib/assets/arcade_snake/head_up.png"},
+    {'>', "lib/assets/arcade_snake/head_up.png"},
     {'^', "lib/assets/arcade_snake/head_up.png"},
-    {'+', "lib/assets/arcade_snake/head_down.png"},
+    {'+', "lib/assets/arcade_snake/head_up.png"},
     {'X', "lib/assets/arcade_snake/body_full.png"},
     {'O', "lib/assets/arcade_snake/apple.png"}
 };
@@ -69,14 +69,15 @@ const std::map<char, std::string> TILES_ASSETS = {
 typedef struct factorValues_s {
     char character;
     vector_t factor;
+    direction_e direction;
 } factorValues_t;
 
 const std::map<event_e, factorValues_t> DIRECTIONS_FACTOR =
 {
-    {A_KEY_DOWN, {'+', {0.0, 1}}},
-    {A_KEY_LEFT, {'<', {-1, 0.0}}},
-    {A_KEY_RIGHT, {'>', {1, 0.0}}},
-    {A_KEY_UP, {'^', {0.0, -1}}}
+    {A_KEY_DOWN, {'+', {0.0, 1}, DOWN}},
+    {A_KEY_LEFT, {'<', {-1, 0.0}, LEFT}},
+    {A_KEY_RIGHT, {'>', {1, 0.0}, RIGHT}},
+    {A_KEY_UP, {'^', {0.0, -1}, UP}}
 };
 
 const std::map<event_e, event_e> OPPOSITES =

@@ -88,7 +88,7 @@ void Sdl::displaySprites(entity_t entity)
     SDL_Rect rect = CREATE_RECT(entity);
 
     if (texture) {
-        SDL_RenderCopy(renderer, texture, nullptr, &rect);
+        SDL_RenderCopyEx(renderer, texture, NULL, &rect, ROTATION[entity.direction], NULL, SDL_FLIP_NONE);
         SDL_DestroyTexture(texture);
     } else {
         SET_COLOR(renderer, entity.color);

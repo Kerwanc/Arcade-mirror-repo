@@ -99,6 +99,7 @@ void Snake::moveSnake(event_e directionKey)
         return;
     }
     snake_.front().character = DIRECTIONS_FACTOR.at(directionKey).character;
+    snake_.front().direction = DIRECTIONS_FACTOR.at(directionKey).direction;
     snake_.front().asset = TILES_ASSETS.at(snake_.front().character);
     for (auto &snakePart : snake_) {
         actualPose = snakePart.pos;

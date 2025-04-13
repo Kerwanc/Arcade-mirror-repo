@@ -126,6 +126,15 @@ const color_t COLORS[] {
     {255, 255, 0, 255}
 };
 
+
+const double ROTATION[4]
+{
+    0,
+    180,
+    270,
+    90
+};
+
 const std::map<Uint32, event_e> MOUSE_EVENT_LINK =
 {
     {SDL_BUTTON_RIGHT, A_MOUSE_RIGHT},
