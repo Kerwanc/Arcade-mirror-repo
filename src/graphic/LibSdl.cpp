@@ -92,7 +92,6 @@ void Sdl::displaySprites(entity_t entity)
         SDL_DestroyTexture(texture);
     } else {
         SET_COLOR(renderer, entity.color);
-        printf("r = %d g = %d  b = %d a = %d\n", entity.color.r, entity.color.g, entity.color.b, entity.color.a);
         SDL_RenderFillRect(renderer, &rect);
         SET_COLOR(renderer, COLORS[BLACK]);
     }
