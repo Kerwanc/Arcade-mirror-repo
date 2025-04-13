@@ -1,8 +1,20 @@
 
 Ce projet a été effectué avec des architectures communes aux étudiants suivants :
-benoit.thomas@epitech.eu
 swann.grandin@epitech.eu
+benoit.thomas@epitech.eu
+mariia.semenchenko@epitech.eu
+
 pierre.pruvost@epitech.eu
+baptiste.dunes@epitech.eu
+jules.delteil@epitech.eu
+
+luigi.gomes@epitech.eu
+celian.raguin@epitech.eu
+kerwan.calvier@epitech.eu
+
+jason.zohou@epitech.eu
+mikal.zheng@epitech.eu
+paul.berlioz@epitech.eu
 
 Notre projet reproduit le fonctionnement d’une borne d’arcade. Pour la faire fonctionner, nous fournissons un Core, qui est l’équivalent de la borne en elle-même. Elle doit être accompagnée d’une ou plus bibliothèque graphique afin d’être capable d’afficher vos jeux et votre menu. Une fois fait, il vous faudra ajouter les jeux que vous souhaitez vous y jouer
 
