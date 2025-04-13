@@ -16,6 +16,7 @@ Sdl::Sdl()
     window = SDL_CreateWindow("Arcade", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         WINDOW_SIZE, WINDOW_SIZE, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SET_COLOR(renderer, COLORS[BLACK]);
 }
 
@@ -27,22 +28,6 @@ Sdl::~Sdl()
     IMG_Quit();
     SDL_Quit();
 }
-
-/*
-    SDL
-
-        SDL_RECT type
-        IMG_LOAD
-            SDL_CREATETEXTUREFROMSURFACE
-            SDL_RENDERCOPY
-            SDL_FREESURFACE
-            SDL__DESTROYTEXTURE
-
-        POUR COULEUR
-            SDL_SETRENDERDRAWCOLOR
-            SDL_FILLRECT
-            DEU
-*/
 
 event_t Sdl::getEvent()
 {
@@ -101,13 +86,16 @@ void Sdl::displaySprites(entity_t entity)
 {
     SDL_Texture *texture = IMG_LoadTexture(renderer, entity.asset.c_str());
     SDL_Rect rect = CREATE_RECT(entity);
+
     if (texture) {
         SDL_RenderCopy(renderer, texture, nullptr, &rect);
+        SDL_DestroyTexture(texture);
     } else {
         SET_COLOR(renderer, entity.color);
-        SDL_RenderFillRects(renderer, &rect, 1);
+        printf("r = %d g = %d  b = %d a = %d\n", entity.color.r, entity.color.g, entity.color.b, entity.color.a);
+        SDL_RenderFillRect(renderer, &rect);
+        SET_COLOR(renderer, COLORS[BLACK]);
     }
-    SDL_DestroyTexture(texture);
 }
 
 void Sdl::display(data_t data)

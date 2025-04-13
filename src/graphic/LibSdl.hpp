@@ -128,8 +128,8 @@ const color_t COLORS[] {
 
 const std::map<Uint32, event_e> MOUSE_EVENT_LINK =
 {
-    {SDL_BUTTON_RIGHT, A_MOUSE_LEFT},
-    {SDL_BUTTON_LEFT, A_MOUSE_RIGHT},
+    {SDL_BUTTON_RIGHT, A_MOUSE_RIGHT},
+    {SDL_BUTTON_LEFT, A_MOUSE_LEFT},
 };
 
 extern "C" arcade::IGraphic* makeGraphic();
